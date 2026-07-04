@@ -1,0 +1,9 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definitionProperties/2.0.0/schema.json",
+  "version": "4.0",
+  "datasetReference": {
+    "byConnection": {
+      "connectionString": "Data Source=powerbi://api.powerbi.com/v1.0/myorg/Tarpon;initial catalog=\"Truist Executive Command Center\";integrated security=ClaimsToken;semanticmodelid=e4d94e70-621c-402c-b997-5ea9c178b06f"
+    }
+  }
+}

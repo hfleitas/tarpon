@@ -1,0 +1,46 @@
+table commercial_clients
+	lineageTag: 78b184c5-ea38-48f9-a2ea-2a705d91cdc1
+	sourceLineageTag: [dbo].[commercial_clients]
+
+	column ClientID
+		dataType: string
+		lineageTag: 94e6a938-4a1c-4776-95f9-aa3fde656d86
+		sourceLineageTag: ClientID
+		summarizeBy: none
+		sourceColumn: ClientID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientName
+		dataType: string
+		lineageTag: 78e32cff-1307-4a9a-9b49-82b09875fbe3
+		sourceLineageTag: ClientName
+		summarizeBy: none
+		sourceColumn: ClientName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Industry
+		dataType: string
+		lineageTag: 61d961f9-4c07-4c19-abeb-be9fc6562688
+		sourceLineageTag: Industry
+		summarizeBy: none
+		sourceColumn: Industry
+
+		annotation SummarizationSetBy = Automatic
+
+	column Rating
+		dataType: string
+		lineageTag: 450e1c3f-6a4d-4ca6-863b-b8a6f74309a6
+		sourceLineageTag: Rating
+		summarizeBy: none
+		sourceColumn: Rating
+
+		annotation SummarizationSetBy = Automatic
+
+	partition commercial_clients = entity
+		mode: directLake
+		source
+			entityName: commercial_clients
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

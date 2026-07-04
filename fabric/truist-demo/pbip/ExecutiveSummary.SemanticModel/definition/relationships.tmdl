@@ -1,0 +1,33 @@
+relationship Rel_AMLAlerts_Customers
+	isActive: false
+	fromColumn: aml_alerts.CustomerID
+	toColumn: retail_customers.CustomerID
+
+relationship Rel_AMLAlerts_Transactions
+	fromColumn: aml_alerts.TxID
+	toColumn: retail_transactions.TxID
+
+relationship Rel_Treasury_Clients
+	fromColumn: commercial_treasurypositions.ClientID
+	toColumn: commercial_clients.ClientID
+
+relationship Rel_Digital_Customers
+	fromColumn: digital_engagementevents.CustomerID
+	toColumn: retail_customers.CustomerID
+
+relationship Rel_Accounts_Customers
+	fromColumn: retail_accounts.CustomerID
+	toColumn: retail_customers.CustomerID
+
+relationship Rel_Transactions_Accounts
+	fromColumn: retail_transactions.AccountID
+	toColumn: retail_accounts.AccountID
+
+relationship Rel_CreditScores_Customers
+	fromColumn: risk_creditriskscores.CustomerID
+	toColumn: retail_customers.CustomerID
+
+relationship Rel_EWS_Customers
+	fromColumn: risk_earlywarningsignals.CustomerID
+	toColumn: retail_customers.CustomerID
+

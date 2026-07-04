@@ -1,0 +1,57 @@
+table retail_accounts
+	lineageTag: facf456a-b04f-49e2-932a-882089bf2da8
+	sourceLineageTag: [dbo].[retail_accounts]
+
+	column AccountID
+		dataType: string
+		lineageTag: 47d1a55c-d447-42d1-8ba6-184f5e98cc62
+		sourceLineageTag: AccountID
+		summarizeBy: none
+		sourceColumn: AccountID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: string
+		lineageTag: ea0aee7b-fa24-4e92-9670-dd05e91d56ef
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductType
+		dataType: string
+		lineageTag: 721560c4-9130-49bf-9b12-3a159b577737
+		sourceLineageTag: ProductType
+		summarizeBy: none
+		sourceColumn: ProductType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Balance
+		dataType: double
+		lineageTag: f6a75b54-1373-400f-a05f-de3ad03f5772
+		sourceLineageTag: Balance
+		summarizeBy: sum
+		sourceColumn: Balance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Status
+		dataType: string
+		lineageTag: f3f30b7d-a6f7-4c74-8823-e26419847a3c
+		sourceLineageTag: Status
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition retail_accounts = entity
+		mode: directLake
+		source
+			entityName: retail_accounts
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

@@ -1,0 +1,81 @@
+table commercial_treasurypositions
+	lineageTag: a37dd490-5bdd-41d1-b4ab-3d188ec4a59d
+	sourceLineageTag: [dbo].[commercial_treasurypositions]
+
+	measure 'FX Exposure' = CALCULATE(SUM(Commercial_TreasuryPositions[Amount]), Commercial_TreasuryPositions[Currency] <> "USD")
+		formatString: $#,0.00;($#,0.00);$#,0.00
+		lineageTag: b9827ccb-f31e-42d4-9264-fd1dacf20a66
+
+		changedProperty = IsHidden
+
+	measure 'Liquidity by Bucket' = SUM(Commercial_TreasuryPositions[Amount])
+		formatString: $#,0.00;($#,0.00);$#,0.00
+		lineageTag: 54c35b6e-c913-4a17-bce5-40c3f15b50f5
+
+		changedProperty = IsHidden
+
+	column PositionID
+		dataType: string
+		lineageTag: 62bdda7e-ce75-486e-b158-c2d469dee68c
+		sourceLineageTag: PositionID
+		summarizeBy: none
+		sourceColumn: PositionID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientID
+		dataType: string
+		lineageTag: f2aa0a39-46a7-4dbf-9774-5537e89a0c2c
+		sourceLineageTag: ClientID
+		summarizeBy: none
+		sourceColumn: ClientID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Currency
+		dataType: string
+		lineageTag: 4e6e8a2c-557a-4cb9-8b2d-a262d9e57fa8
+		sourceLineageTag: Currency
+		summarizeBy: none
+		sourceColumn: Currency
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Amount
+		dataType: double
+		lineageTag: a67dd6d7-c9d8-4861-a85a-d8c2045d67bc
+		sourceLineageTag: Amount
+		summarizeBy: sum
+		sourceColumn: Amount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LiquidityBucket
+		dataType: string
+		lineageTag: 18c96e9c-8ea4-4dac-981f-82c327df0b8d
+		sourceLineageTag: LiquidityBucket
+		summarizeBy: none
+		sourceColumn: LiquidityBucket
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition commercial_treasurypositions = entity
+		mode: directLake
+		source
+			entityName: commercial_treasurypositions
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+
+	changedProperty = IsHidden
+
