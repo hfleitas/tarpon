@@ -1,0 +1,71 @@
+{
+  "name": "pl_digital_engagement_append",
+  "properties": {
+    "description": "Appends digital engagement events from log files into Delta and refreshes KPI aggregates.",
+    "activities": [
+      {
+        "name": "CopyDigitalLogs",
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "JsonSource",
+            "storeSettings": {
+              "type": "FileServerReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "Append"
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_src_digital_logs_json",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_lh_digital_events_stage",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "DataflowDigitalCleansing",
+        "type": "ExecuteDataFlow",
+        "dependsOn": [
+          {
+            "activity": "CopyDigitalLogs",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "dataflow": {
+            "referenceName": "df_digital_engagement_clean",
+            "type": "DataFlowReference"
+          }
+        }
+      },
+      {
+        "name": "NotebookDigitalKpiBuild",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "DataflowDigitalCleansing",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/04_digital_engagement_kpis",
+          "baseParameters": {}
+        }
+      }
+    ]
+  }
+}

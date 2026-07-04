@@ -1,0 +1,225 @@
+{
+  "modelName": "TruistRiskDigitalTreasury",
+  "description": "Semantic model for Truist demo (risk, AML, digital, treasury).",
+  "storageMode": "DirectLake",
+  "datasource": {
+    "type": "OneLake",
+    "workspaceName": "TruistBankDemo",
+    "lakehouseName": "TruistDemoLakehouse",
+    "sqlEndpointName": "TruistDemoLakehouse_SQL"
+  },
+  "tables": [
+    {
+      "name": "Customers",
+      "sourceTable": "Retail_Customers",
+      "columns": [
+        "CustomerID",
+        "Name",
+        "Segment",
+        "RiskTier",
+        "DigitalAdoptionScore"
+      ]
+    },
+    {
+      "name": "Accounts",
+      "sourceTable": "Retail_Accounts",
+      "columns": [
+        "AccountID",
+        "CustomerID",
+        "ProductType",
+        "Balance",
+        "Status"
+      ]
+    },
+    {
+      "name": "Transactions",
+      "sourceTable": "Retail_Transactions",
+      "columns": [
+        "TxID",
+        "AccountID",
+        "Amount",
+        "Channel",
+        "Timestamp",
+        "MerchantCategory"
+      ]
+    },
+    {
+      "name": "CreditRiskScores",
+      "sourceTable": "Risk_CreditRiskScores",
+      "columns": [
+        "CustomerID",
+        "Score",
+        "PD",
+        "LGD",
+        "UpdatedAt"
+      ]
+    },
+    {
+      "name": "EarlyWarningSignals",
+      "sourceTable": "Risk_EarlyWarningSignals",
+      "columns": [
+        "CustomerID",
+        "SignalType",
+        "Severity",
+        "TriggeredAt"
+      ]
+    },
+    {
+      "name": "AMLAlerts",
+      "sourceTable": "AML_Alerts",
+      "columns": [
+        "AlertID",
+        "CustomerID",
+        "TxID",
+        "RiskScore",
+        "Reason",
+        "CreatedAt"
+      ]
+    },
+    {
+      "name": "DigitalEngagement",
+      "sourceTable": "Digital_EngagementEvents",
+      "columns": [
+        "CustomerID",
+        "EventType",
+        "Device",
+        "Timestamp"
+      ]
+    },
+    {
+      "name": "TreasuryPositions",
+      "sourceTable": "Commercial_TreasuryPositions",
+      "columns": [
+        "PositionID",
+        "ClientID",
+        "Currency",
+        "Amount",
+        "LiquidityBucket"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "fromTable": "Customers",
+      "fromColumn": "CustomerID",
+      "toTable": "Accounts",
+      "toColumn": "CustomerID",
+      "crossFilterDirection": "Single"
+    },
+    {
+      "fromTable": "Accounts",
+      "fromColumn": "AccountID",
+      "toTable": "Transactions",
+      "toColumn": "AccountID",
+      "crossFilterDirection": "Single"
+    },
+    {
+      "fromTable": "Customers",
+      "fromColumn": "CustomerID",
+      "toTable": "CreditRiskScores",
+      "toColumn": "CustomerID",
+      "crossFilterDirection": "Single"
+    },
+    {
+      "fromTable": "Customers",
+      "fromColumn": "CustomerID",
+      "toTable": "EarlyWarningSignals",
+      "toColumn": "CustomerID",
+      "crossFilterDirection": "Single"
+    },
+    {
+      "fromTable": "Customers",
+      "fromColumn": "CustomerID",
+      "toTable": "AMLAlerts",
+      "toColumn": "CustomerID",
+      "crossFilterDirection": "Single"
+    },
+    {
+      "fromTable": "Customers",
+      "fromColumn": "CustomerID",
+      "toTable": "DigitalEngagement",
+      "toColumn": "CustomerID",
+      "crossFilterDirection": "Single"
+    }
+  ],
+  "measures": {
+    "Risk": [
+      {
+        "name": "Credit Score Avg",
+        "expression": "AVERAGE(CreditRiskScores[Score])"
+      },
+      {
+        "name": "PD Weighted",
+        "expression": "VAR CustomerWeights = SUMX(VALUES(Customers[CustomerID]), CALCULATE(SUM(Accounts[Balance])) * CALCULATE(AVERAGE(CreditRiskScores[PD]))) RETURN DIVIDE(CustomerWeights, SUM(Accounts[Balance]), 0)"
+      },
+      {
+        "name": "LGD Weighted",
+        "expression": "VAR CustomerWeights = SUMX(VALUES(Customers[CustomerID]), CALCULATE(SUM(Accounts[Balance])) * CALCULATE(AVERAGE(CreditRiskScores[LGD]))) RETURN DIVIDE(CustomerWeights, SUM(Accounts[Balance]), 0)"
+      },
+      {
+        "name": "Early Warning Count",
+        "expression": "COUNTROWS(EarlyWarningSignals)"
+      }
+    ],
+    "AML": [
+      {
+        "name": "AML Alert Count",
+        "expression": "COUNTROWS(AMLAlerts)"
+      },
+      {
+        "name": "High Severity Alerts",
+        "expression": "CALCULATE(COUNTROWS(AMLAlerts), AMLAlerts[RiskScore] >= 80)"
+      },
+      {
+        "name": "Suspicious Transaction Ratio",
+        "expression": "DIVIDE([AML Alert Count], DISTINCTCOUNT(Transactions[TxID]), 0)"
+      }
+    ],
+    "Digital": [
+      {
+        "name": "DAU",
+        "expression": "VAR CurrentDate = MAX(DigitalEngagement[Timestamp]) RETURN CALCULATE(DISTINCTCOUNT(DigitalEngagement[CustomerID]), FILTER(ALL(DigitalEngagement), DATEVALUE(DigitalEngagement[Timestamp]) = DATEVALUE(CurrentDate)))"
+      },
+      {
+        "name": "MAU",
+        "expression": "VAR CurrentDate = MAX(DigitalEngagement[Timestamp]) RETURN CALCULATE(DISTINCTCOUNT(DigitalEngagement[CustomerID]), DATESINPERIOD(DigitalEngagement[Timestamp], CurrentDate, -30, DAY))"
+      },
+      {
+        "name": "Mobile Adoption %",
+        "expression": "DIVIDE(CALCULATE(DISTINCTCOUNT(DigitalEngagement[CustomerID]), DigitalEngagement[Device] = \"Mobile\"), DISTINCTCOUNT(DigitalEngagement[CustomerID]), 0)"
+      },
+      {
+        "name": "Engagement Score",
+        "expression": "VAR WeightedEvents = SUMX(DigitalEngagement, SWITCH(TRUE(), DigitalEngagement[EventType] = \"Login\", 1.0, DigitalEngagement[EventType] = \"BillPay\", 1.5, DigitalEngagement[EventType] = \"Transfer\", 1.8, DigitalEngagement[EventType] = \"TreasuryApproval\", 2.0, 1.2)) RETURN DIVIDE(WeightedEvents, DISTINCTCOUNT(DigitalEngagement[CustomerID]), 0)"
+      }
+    ],
+    "Treasury": [
+      {
+        "name": "Liquidity by Bucket",
+        "expression": "SUM(TreasuryPositions[Amount])"
+      },
+      {
+        "name": "FX Exposure",
+        "expression": "SUMX(FILTER(TreasuryPositions, TreasuryPositions[Currency] <> \"USD\"), ABS(TreasuryPositions[Amount]))"
+      }
+    ]
+  },
+  "annotations": [
+    {
+      "name": "CopilotPrompt1",
+      "value": "Explain why Customer 123 moved into high-risk tier."
+    },
+    {
+      "name": "CopilotPrompt2",
+      "value": "Summarize AML alerts for the last 24 hours."
+    },
+    {
+      "name": "CopilotPrompt3",
+      "value": "Describe liquidity changes across buckets."
+    },
+    {
+      "name": "CopilotPrompt4",
+      "value": "Generate a client-ready narrative for digital engagement trends."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "name": "pl_retail_transactions_daily",
+  "properties": {
+    "description": "Ingests daily retail transactions from source CSV into Lakehouse Delta table.",
+    "parameters": {
+      "processingDate": {
+        "type": "String",
+        "defaultValue": "@{formatDateTime(addDays(utcnow(),-1),'yyyy-MM-dd')}"
+      }
+    },
+    "activities": [
+      {
+        "name": "CopyRetailTransactionsCsv",
+        "type": "Copy",
+        "policy": {
+          "timeout": "0.06:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 120
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "storeSettings": {
+              "type": "FileServerReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "Append"
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_src_retail_transactions_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_lh_retail_transactions_stage",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "DataflowRetailStandardization",
+        "type": "ExecuteDataFlow",
+        "dependsOn": [
+          {
+            "activity": "CopyRetailTransactionsCsv",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "dataflow": {
+            "referenceName": "df_retail_transactions_standardize",
+            "type": "DataFlowReference"
+          }
+        }
+      },
+      {
+        "name": "NotebookRetailMergeToDelta",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "DataflowRetailStandardization",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/ingest_retail_transactions",
+          "baseParameters": {
+            "processingDate": {
+              "value": "@pipeline().parameters.processingDate",
+              "type": "Expression"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

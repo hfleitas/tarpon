@@ -1,0 +1,71 @@
+{
+  "name": "pl_aml_alerts_json",
+  "properties": {
+    "description": "Ingests AML alerts from JSON and enriches with notebook-based scoring.",
+    "activities": [
+      {
+        "name": "CopyAmlAlertsJson",
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "JsonSource",
+            "storeSettings": {
+              "type": "FileServerReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "Append"
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_src_aml_alerts_json",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_lh_aml_alerts_stage",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "DataflowAmlNormalization",
+        "type": "ExecuteDataFlow",
+        "dependsOn": [
+          {
+            "activity": "CopyAmlAlertsJson",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "dataflow": {
+            "referenceName": "df_aml_alerts_normalize",
+            "type": "DataFlowReference"
+          }
+        }
+      },
+      {
+        "name": "NotebookAmlAnomalyRefresh",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "DataflowAmlNormalization",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/03_aml_anomaly_detection",
+          "baseParameters": {}
+        }
+      }
+    ]
+  }
+}

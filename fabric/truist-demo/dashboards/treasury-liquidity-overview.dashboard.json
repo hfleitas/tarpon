@@ -1,0 +1,28 @@
+{
+  "dashboardName": "Treasury Liquidity Overview",
+  "semanticModel": "TruistRiskDigitalTreasury",
+  "pages": [
+    {
+      "name": "TreasuryOverview",
+      "visuals": [
+        {
+          "title": "Liquidity by Bucket",
+          "visualType": "clusteredBarChart",
+          "x": "TreasuryPositions[LiquidityBucket]",
+          "y": "[Liquidity by Bucket]"
+        },
+        {
+          "title": "FX Exposure",
+          "visualType": "card",
+          "value": "[FX Exposure]"
+        },
+        {
+          "title": "Currency Mix",
+          "visualType": "donutChart",
+          "legend": "TreasuryPositions[Currency]",
+          "value": "SUM(TreasuryPositions[Amount])"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "dashboardName": "Credit Risk Early Warning",
+  "semanticModel": "TruistRiskDigitalTreasury",
+  "pages": [
+    {
+      "name": "RiskOverview",
+      "visuals": [
+        {
+          "title": "Credit Score Trend",
+          "visualType": "lineChart",
+          "x": "CreditRiskScores[UpdatedAt]",
+          "y": "[Credit Score Avg]"
+        },
+        {
+          "title": "Early Warning Count by Severity",
+          "visualType": "clusteredColumnChart",
+          "x": "EarlyWarningSignals[Severity]",
+          "y": "[Early Warning Count]"
+        },
+        {
+          "title": "PD Weighted",
+          "visualType": "card",
+          "value": "[PD Weighted]"
+        },
+        {
+          "title": "LGD Weighted",
+          "visualType": "card",
+          "value": "[LGD Weighted]"
+        }
+      ]
+    }
+  ]
+}

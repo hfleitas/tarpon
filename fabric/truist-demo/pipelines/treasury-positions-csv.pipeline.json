@@ -1,0 +1,76 @@
+{
+  "name": "pl_treasury_positions_csv",
+  "properties": {
+    "description": "Ingests treasury positions from CSV into Commercial_TreasuryPositions.",
+    "activities": [
+      {
+        "name": "CopyTreasuryCsv",
+        "type": "Copy",
+        "policy": {
+          "timeout": "0.04:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 90
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "storeSettings": {
+              "type": "FileServerReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableActionOption": "Append"
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_src_treasury_positions_csv",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_lh_treasury_positions_stage",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "DataflowTreasuryConformance",
+        "type": "ExecuteDataFlow",
+        "dependsOn": [
+          {
+            "activity": "CopyTreasuryCsv",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "dataflow": {
+            "referenceName": "df_treasury_positions_conform",
+            "type": "DataFlowReference"
+          }
+        }
+      },
+      {
+        "name": "NotebookTreasuryUpsert",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "DataflowTreasuryConformance",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/ingest_treasury_positions",
+          "baseParameters": {}
+        }
+      }
+    ]
+  }
+}

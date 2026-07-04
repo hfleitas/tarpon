@@ -1,0 +1,39 @@
+{
+  "dashboardName": "Digital Engagement Insights",
+  "semanticModel": "TruistRiskDigitalTreasury",
+  "pages": [
+    {
+      "name": "DigitalKPIs",
+      "visuals": [
+        {
+          "title": "DAU",
+          "visualType": "card",
+          "value": "[DAU]"
+        },
+        {
+          "title": "MAU",
+          "visualType": "card",
+          "value": "[MAU]"
+        },
+        {
+          "title": "Mobile Adoption %",
+          "visualType": "card",
+          "value": "[Mobile Adoption %]"
+        },
+        {
+          "title": "Engagement Score Trend",
+          "visualType": "lineChart",
+          "x": "DigitalEngagement[Timestamp]",
+          "y": "[Engagement Score]"
+        },
+        {
+          "title": "Event Mix by Device",
+          "visualType": "stackedColumnChart",
+          "x": "DigitalEngagement[EventType]",
+          "legend": "DigitalEngagement[Device]",
+          "y": "COUNT(DigitalEngagement[CustomerID])"
+        }
+      ]
+    }
+  ]
+}
