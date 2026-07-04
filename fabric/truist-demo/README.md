@@ -24,7 +24,9 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
 - `pipelines/*.pipeline.json`  
   Fabric pipeline definitions for retail transactions, treasury CSV, AML JSON, digital logs, and orchestration.
 - `kql/truistsignals.kql`  
-  Eventhouse/KQL database objects and operational queries.
+  Eventhouse/KQL database setup script (tables, streaming ingestion policy, and mappings).
+- `kql/truistsignals.sample-queries.kql`  
+  Sample KQL analytics queries (fraud, watchlist, funnel) plus Copilot prompt references.
 - `deployment/setup-workspace.ps1`  
   Workspace setup automation step that applies the KQL setup section from `kql/truistsignals.kql` to the target KQL database.
 - `semantic-model/truist-risk-digital-treasury.semanticmodel.json`  
