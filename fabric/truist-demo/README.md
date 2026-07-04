@@ -25,6 +25,8 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
   Fabric pipeline definitions for retail transactions, treasury CSV, AML JSON, digital logs, and orchestration.
 - `kql/truistsignals.kql`  
   Eventhouse/KQL database objects and operational queries.
+- `deployment/setup-workspace.ps1`  
+  Workspace setup automation step that applies the KQL setup section from `kql/truistsignals.kql` to the target KQL database.
 - `semantic-model/truist-risk-digital-treasury.semanticmodel.json`  
   Semantic model definition with required measures.
 - `dashboards/*.dashboard.json`  
@@ -53,3 +55,17 @@ Use these in Fabric Copilot / Power BI Copilot:
 2. `Summarize AML alerts for the last 24 hours.`
 3. `Describe liquidity changes across buckets.`
 4. `Generate a client-ready narrative for digital engagement trends.`
+
+## Workspace Setup Automation (includes Eventhouse/KQL bootstrap)
+
+Run this after authenticating with `az login` to apply the KQL tables + ingestion mappings as part of workspace setup:
+
+```powershell
+.\fabric\truist-demo\deployment\setup-workspace.ps1 `
+  -WorkspaceId "09fd4407-ad4f-42a6-92cd-c69bccd5daa1" `
+  -KqlDatabaseDisplayName "TruistSignalsHost"
+```
+
+Notes:
+- The script executes the setup sections of `kql/truistsignals.kql` (table creation, streaming-ingestion policy, JSON mappings).
+- It targets the KQL database name resolved from Fabric metadata for the provided workspace and display name.
