@@ -1,0 +1,33 @@
+{
+  "dashboardName": "AML Case Intelligence",
+  "semanticModel": "TruistRiskDigitalTreasury",
+  "pages": [
+    {
+      "name": "AMLMonitoring",
+      "visuals": [
+        {
+          "title": "Alerts in Last 24 Hours",
+          "visualType": "card",
+          "value": "[AML Alert Count]"
+        },
+        {
+          "title": "High Severity Alerts",
+          "visualType": "card",
+          "value": "[High Severity Alerts]"
+        },
+        {
+          "title": "Suspicious Transaction Ratio",
+          "visualType": "gauge",
+          "value": "[Suspicious Transaction Ratio]",
+          "target": 0.03
+        },
+        {
+          "title": "AML Alerts by Reason",
+          "visualType": "barChart",
+          "x": "AMLAlerts[Reason]",
+          "y": "[AML Alert Count]"
+        }
+      ]
+    }
+  ]
+}

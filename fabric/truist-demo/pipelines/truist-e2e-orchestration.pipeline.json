@@ -1,0 +1,109 @@
+{
+  "name": "pl_truist_e2e_orchestration",
+  "properties": {
+    "description": "End-to-end orchestration for Truist demo ingestion and transformation assets.",
+    "activities": [
+      {
+        "name": "RunRetailTransactionsIngestion",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_retail_transactions_daily",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "RunTreasuryIngestion",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "RunRetailTransactionsIngestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_treasury_positions_csv",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "RunAMLIngestion",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "RunTreasuryIngestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_aml_alerts_json",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "RunDigitalIngestion",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "RunAMLIngestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_digital_engagement_append",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "NotebookCreditDeterioration",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "RunDigitalIngestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/01_credit_deterioration_signals"
+        }
+      },
+      {
+        "name": "NotebookRiskTierGeneration",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "NotebookCreditDeterioration",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "notebookPath": "/notebooks/02_customer_risk_tiers"
+        }
+      }
+    ],
+    "annotations": [
+      "Runs ingest + transformation notebooks for risk, AML, digital, and treasury."
+    ]
+  }
+}
