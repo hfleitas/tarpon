@@ -1,0 +1,59 @@
+// ============================================================================
+// TruistSignals - Sample analytics queries + Copilot prompt references
+// Purpose: example read/query patterns for fraud, AML, and digital behaviors
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// 1) Query: Fraud anomaly detection
+// ----------------------------------------------------------------------------
+let baseline =
+    RealTimeTransactions
+    | where EventTime > ago(14d)
+    | summarize avg_amt = avg(Amount), std_amt = stdev(Amount) by MerchantCategory, Channel;
+RealTimeTransactions
+| where EventTime > ago(1d)
+| join kind=leftouter baseline on MerchantCategory, Channel
+| extend z_score = iif(std_amt == 0 or isnull(std_amt), 0.0, (Amount - avg_amt) / std_amt)
+| where abs(z_score) >= 3 or Amount > 10000
+| project EventTime, TxID, CustomerID, Amount, MerchantCategory, Channel, z_score
+| order by EventTime desc
+
+// ----------------------------------------------------------------------------
+// 2) Query: High-risk customer watchlist
+// ----------------------------------------------------------------------------
+let high_risk_customers =
+    RealTimeTransactions
+    | where EventTime > ago(7d)
+    | summarize tx_count = count(), total_amount = sum(Amount) by CustomerID, RiskTier
+    | where RiskTier == "High" and tx_count >= 5;
+let aml_pressure =
+    RealTimeAMLAlerts
+    | where CreatedAt > ago(7d)
+    | summarize alert_count = count(), max_risk = max(RiskScore) by CustomerID;
+high_risk_customers
+| join kind=leftouter aml_pressure on CustomerID
+| extend alert_count = coalesce(alert_count, 0), max_risk = coalesce(max_risk, 0.0)
+| where alert_count > 0 or total_amount > 50000
+| project CustomerID, RiskTier, tx_count, total_amount, alert_count, max_risk
+| order by max_risk desc, total_amount desc
+
+// ----------------------------------------------------------------------------
+// 3) Query: Digital drop-off funnel analysis
+// ----------------------------------------------------------------------------
+let funnel =
+    RealTimeDigitalEvents
+    | where EventTime > ago(1d)
+    | summarize users = dcount(CustomerID) by EventType;
+let total_login =
+    toscalar(funnel | where EventType == "Login" | project users);
+funnel
+| extend conversion_pct = iif(isnull(total_login) or total_login == 0, 0.0, todouble(users) / todouble(total_login) * 100.0)
+| order by users desc
+
+// ----------------------------------------------------------------------------
+// Copilot prompts for semantic model narratives (reference comments)
+// ----------------------------------------------------------------------------
+// Copilot prompt: Explain why Customer 123 moved into high-risk tier.
+// Copilot prompt: Summarize AML alerts for the last 24 hours.
+// Copilot prompt: Describe liquidity changes across buckets.
+// Copilot prompt: Generate a client-ready narrative for digital engagement trends.
