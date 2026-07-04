@@ -1,0 +1,79 @@
+table aml_alerts
+	lineageTag: e8ad8a1e-a9b7-4784-a4a2-c22ea625dfd9
+	sourceLineageTag: [dbo].[aml_alerts]
+
+	measure 'AML Alert Count' = COUNTROWS(AML_Alerts)
+		formatString: #,0
+		lineageTag: a9ab1684-3473-4cf7-b66f-6c73cd886468
+
+	measure 'High Severity Alerts' = CALCULATE([AML Alert Count], KEEPFILTERS(AML_Alerts[RiskScore] >= 80))
+		formatString: #,0
+		lineageTag: 915291a5-33ca-41ba-b36d-30c178b3bbc2
+
+	measure 'Suspicious Transaction Ratio' = DIVIDE(DISTINCTCOUNT(AML_Alerts[TxID]), DISTINCTCOUNT(Retail_Transactions[TxID]))
+		formatString: 0.00%
+		lineageTag: 355f7d2f-6eb4-4c3d-b78f-c3933f79504d
+
+	column AlertID
+		dataType: string
+		lineageTag: a3895b1d-3fe2-48df-a64f-fde5945a4441
+		sourceLineageTag: AlertID
+		summarizeBy: none
+		sourceColumn: AlertID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: string
+		lineageTag: e4903ef9-3de4-4580-b4c9-8ac8cf5aef7b
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column TxID
+		dataType: string
+		lineageTag: 3fa88bdd-4ec7-4b8f-a83f-12664b776823
+		sourceLineageTag: TxID
+		summarizeBy: none
+		sourceColumn: TxID
+
+		annotation SummarizationSetBy = Automatic
+
+	column RiskScore
+		dataType: double
+		lineageTag: 6946d11f-a210-43a4-a58d-a5bb7068f68c
+		sourceLineageTag: RiskScore
+		summarizeBy: sum
+		sourceColumn: RiskScore
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Reason
+		dataType: string
+		lineageTag: 345f32e0-68b3-4ae1-82c1-6212e3be147e
+		sourceLineageTag: Reason
+		summarizeBy: none
+		sourceColumn: Reason
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: fbf34f45-5a2e-42f0-8a83-09394df152f3
+		sourceLineageTag: CreatedAt
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition aml_alerts = entity
+		mode: directLake
+		source
+			entityName: aml_alerts
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

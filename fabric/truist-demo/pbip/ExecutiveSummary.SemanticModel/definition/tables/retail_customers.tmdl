@@ -1,0 +1,57 @@
+table retail_customers
+	lineageTag: 4d68d135-0176-4022-b82c-3dd0083df0ac
+	sourceLineageTag: [dbo].[retail_customers]
+
+	column CustomerID
+		dataType: string
+		lineageTag: 742d00c1-d022-46ff-adb2-64b4c50a00f2
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 94cbf353-b53c-4339-ba78-17c86fc8c9c7
+		sourceLineageTag: Name
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 90a72dc9-881d-4414-91a4-dadf692a35fe
+		sourceLineageTag: Segment
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column RiskTier
+		dataType: string
+		lineageTag: 4ac2235b-27cb-4699-ab95-c27f34c17bd2
+		sourceLineageTag: RiskTier
+		summarizeBy: none
+		sourceColumn: RiskTier
+
+		annotation SummarizationSetBy = Automatic
+
+	column DigitalAdoptionScore
+		dataType: double
+		lineageTag: f7af7167-8575-4935-afda-d7cce846a1ed
+		sourceLineageTag: DigitalAdoptionScore
+		summarizeBy: sum
+		sourceColumn: DigitalAdoptionScore
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition retail_customers = entity
+		mode: directLake
+		source
+			entityName: retail_customers
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

@@ -1,0 +1,67 @@
+table retail_transactions
+	lineageTag: 3623e702-1944-46ea-8f80-746b98deaa71
+	sourceLineageTag: [dbo].[retail_transactions]
+
+	column TxID
+		dataType: string
+		lineageTag: 24cab20a-efd8-4560-84ad-e49aefb5ba6d
+		sourceLineageTag: TxID
+		summarizeBy: none
+		sourceColumn: TxID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountID
+		dataType: string
+		lineageTag: e51a4942-506e-48e3-a8cf-546ce86bb987
+		sourceLineageTag: AccountID
+		summarizeBy: none
+		sourceColumn: AccountID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Amount
+		dataType: double
+		lineageTag: 7686b679-2fb5-44c4-87ec-bacdaee7249b
+		sourceLineageTag: Amount
+		summarizeBy: sum
+		sourceColumn: Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Channel
+		dataType: string
+		lineageTag: 005843af-285b-4d7e-a868-eb69c29433ee
+		sourceLineageTag: Channel
+		summarizeBy: none
+		sourceColumn: Channel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cba450a4-ac85-4771-9bd9-a3a43b10f335
+		sourceLineageTag: Timestamp
+		summarizeBy: none
+		sourceColumn: Timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column MerchantCategory
+		dataType: string
+		lineageTag: 65f97182-7eb8-4c52-bbde-b455f93fd8fc
+		sourceLineageTag: MerchantCategory
+		summarizeBy: none
+		sourceColumn: MerchantCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	partition retail_transactions = entity
+		mode: directLake
+		source
+			entityName: retail_transactions
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

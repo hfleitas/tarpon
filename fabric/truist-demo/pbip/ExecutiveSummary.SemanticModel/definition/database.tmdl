@@ -1,0 +1,6 @@
+database 'Truist Executive Command Center'
+	id: e4d94e70-621c-402c-b997-5ea9c178b06f
+	compatibilityLevel: 1703
+	compatibilityMode: powerBI
+	language: 1033
+
