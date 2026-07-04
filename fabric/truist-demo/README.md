@@ -28,7 +28,7 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
 - `semantic-model/truist-risk-digital-treasury.semanticmodel.json`  
   Semantic model definition with required measures.
 - `dashboards/*.dashboard.json`  
-  JSON visual definitions for four sample dashboards.
+  JSON visual definitions for four domain dashboards plus a multi-page executive command center (`dashboards/executive-command-center.dashboard.json`).
 
 ## Lakehouse Folder/Table Layout
 
