@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "f2e27bd62d691df040bf",
   "position": {
-    "x": 645,
-    "y": 222,
+    "x": 644.99025341130607,
+    "y": 222.06627680311891,
     "z": 1,
-    "height": 224,
-    "width": 595
+    "height": 474.07407407407408,
+    "width": 595.0877192982457
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -25,7 +25,8 @@
                   "Property": "Reason"
                 }
               },
-              "queryRef": "aml_alerts.Reason"
+              "queryRef": "aml_alerts.Reason",
+              "active": true
             }
           ]
         },

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "238fdbb44d3214d1edd8",
   "position": {
-    "x": 645,
-    "y": 222,
+    "x": 644.99025341130607,
+    "y": 222.06627680311891,
     "z": 1,
-    "height": 224,
-    "width": 595
+    "height": 481.55945419103318,
+    "width": 595.0877192982457
   },
   "visual": {
     "visualType": "clusteredColumnChart",
@@ -25,7 +25,8 @@
                   "Property": "Severity"
                 }
               },
-              "queryRef": "risk_earlywarningsignals.Severity"
+              "queryRef": "risk_earlywarningsignals.Severity",
+              "active": true
             }
           ]
         },

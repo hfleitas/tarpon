@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "5f082e623311f90abd9f",
   "position": {
-    "x": 645,
-    "y": 222,
+    "x": 640,
+    "y": 223.31384015594543,
     "z": 1,
-    "height": 224,
-    "width": 595
+    "height": 447.87524366471735,
+    "width": 600.07797270955166
   },
   "visual": {
     "visualType": "donutChart",
@@ -25,7 +25,8 @@
                   "Property": "Currency"
                 }
               },
-              "queryRef": "commercial_treasurypositions.Currency"
+              "queryRef": "commercial_treasurypositions.Currency",
+              "active": true
             }
           ]
         },

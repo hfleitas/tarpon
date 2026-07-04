@@ -37,6 +37,17 @@
   },
   "resourcePackages": [
     {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "Copilot_Theme1804352039094208.json",
+          "path": "Copilot_Theme1804352039094208.json",
+          "type": "Image"
+        }
+      ]
+    },
+    {
       "name": "SharedResources",
       "type": "SharedResources",
       "items": [
@@ -44,17 +55,6 @@
           "name": "CY26SU07",
           "path": "BaseThemes/CY26SU07.json",
           "type": "BaseTheme"
-        }
-      ]
-    },
-    {
-      "name": "RegisteredResources",
-      "type": "RegisteredResources",
-      "items": [
-        {
-          "name": "Copilot_Theme1804352039094208.json",
-          "path": "Copilot_Theme1804352039094208.json",
-          "type": "CustomTheme"
         }
       ]
     }
