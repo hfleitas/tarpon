@@ -112,7 +112,7 @@ The three cards: 475 total alerts, spread across 461 distinct customers — so t
 
 Now the reasons, on the bar chart. The four typologies are remarkably even: Structuring leads at 130 alerts, followed by Counterparty Concern and Unusual Velocity tied at 116 each, and High-Risk Geography at 113. No single typology is running away. Two nuances worth mentioning: Structuring both leads on volume and carries 28 of the high-severity cases, and High-Risk Geography, while lowest on volume, actually carries the most high-severity cases at 26 — so on a severity-weighted basis, geography punches above its volume.
 
-For context on whether 475 is high: the model holds 5,000 alerts over the prior ten days or so, which is about 500 a day. So 475 is right on trend — a normal day, not a spike. The read on the right captures it: even distribution, Structuring leads, and analyst attention should follow severity — prioritize the Structuring and High-Risk-Geography cases for review. If anyone asks about false-positive rates or tuning, that's a fair follow-up but it's outside what this page shows; I can pull the disposition data separately.
+For context on whether 475 is high: the model holds 5,000 alerts over the prior ten days or so, which is about 500 a day. So 475 is right on trend — a normal day, not a spike. The read on the right captures it: even distribution, Structuring leads, and analyst attention should follow severity — prioritize the Structuring and High-Risk Geography cases for review. If anyone asks about false-positive rates or tuning, that's a fair follow-up but it's outside what this page shows; I can pull the disposition data separately.
 
 ---
 
