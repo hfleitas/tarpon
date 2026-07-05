@@ -27,4 +27,8 @@ Add a repository secret named `PROJECT_AUTOMATION_TOKEN` (PAT) with permission t
 
 - Classic PAT scopes: `repo` (needed for private repos) and `project`
 
+Optional (recommended) repository variables to avoid editing the workflow when Project field/option IDs change:
+- `STATUS_FIELD_ID`, `STATUS_TODO_OPTION_ID`, `STATUS_IN_PROGRESS_OPTION_ID`, `STATUS_DONE_OPTION_ID`
+- `SCENARIO_FIELD_ID`
+- `FIX_PROGRESS_FIELD_ID`
 The workflow falls back to `GITHUB_TOKEN`, but project updates may fail depending on project ownership/permissions; `PROJECT_AUTOMATION_TOKEN` is recommended for reliable ProjectV2 updates.
