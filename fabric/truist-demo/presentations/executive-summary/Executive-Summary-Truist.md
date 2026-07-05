@@ -195,4 +195,4 @@ To close: the portfolio is healthy — no fires — but I'd like two commitments
 
 ---
 
-*Generated from `Executive-Summary-Truist.pptx`. Slide images are in the `slides/` folder alongside this file.*
+*Slide images are in the `slides/` folder alongside this file.*
