@@ -44,6 +44,16 @@ jobs:
               return;
             }
 
+            if (!projectId) {
+              core.setFailed("PROJECT_ID is not set. Add repository variable PROJECT_ID with the ProjectV2 node ID.");
+              return;
+            }
+
+            if (!statusFieldId || !todoOptionId || !inProgressOptionId || !doneOptionId || !scenarioFieldId || !fixProgressFieldId) {
+              core.setFailed("Project field/option IDs are not configured. Set the workflow/repository vars for STATUS_FIELD_ID, STATUS_*_OPTION_ID, SCENARIO_FIELD_ID, and FIX_PROGRESS_FIELD_ID.");
+              return;
+            }
+
             const issueNodeId = context.payload.issue.node_id;
             const issueState = context.payload.issue.state;
             const issueBody = context.payload.issue.body || "";
