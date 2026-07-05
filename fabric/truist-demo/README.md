@@ -65,7 +65,7 @@ The report experience is driven by these dashboard definitions:
 
 ### Executive Summary narrative (presentation-ready)
 
-- **Financial crime & AML:** **475 AML alerts** raised in the last 24 hours, with **95 classified as high severity** (shown as **High Severity Alerts - Last 24 Hours**); leading alert drivers are **Structuring (130)**, **Counterparty Concern (116)**, **Unusual Velocity (116)**, and **High-Risk Geography (113)**, indicating elevated compliance and investigative workload.
+- **Financial crime & AML:** **475 AML alerts** raised in the last 24 hours, with **95 classified as high severity** (shown as **High Severity Alerts**); leading alert drivers are **Structuring (130)**, **Counterparty Concern (116)**, **Unusual Velocity (116)**, and **High-Risk Geography (113)**, indicating elevated compliance and investigative workload.
 - **Suspicious activity quality:** **Suspicious Transaction Ratio is 4.88%**, suggesting a non-trivial portion of monitored activity is being flagged as suspicious and may require further review and SAR decisions.
 - **Credit & portfolio risk:** Average customer **credit score is 575.51**, with **PD weighted at 3.30%** and **LGD weighted at 41.58%**, highlighting moderate credit quality and sizable loss severity if defaults materialize.
 - **Early warning signals:** Early warning indicators are evenly distributed by severity with **2,667 High**, **2,667 Medium**, and **2,666 Low** risk alerts, implying a broad-based risk signal rather than being concentrated in one band.
