@@ -1,0 +1,73 @@
+table risk_creditriskscores
+	lineageTag: cb55af6b-e174-4ac0-81c2-83ea33f1741d
+	sourceLineageTag: [dbo].[risk_creditriskscores]
+
+	measure 'Credit Score Avg' = AVERAGE(Risk_CreditRiskScores[Score])
+		formatString: 0.00
+		lineageTag: 076d1722-5c4e-4051-ac86-899053cf69e2
+
+	measure 'LGD Weighted' = DIVIDE(SUMX(Risk_CreditRiskScores, Risk_CreditRiskScores[LGD] * Risk_CreditRiskScores[Score]), SUM(Risk_CreditRiskScores[Score]))
+		formatString: 0.00%
+		lineageTag: eeecfabb-e37d-4450-a73c-ddd8a427e3f9
+
+	measure 'PD Weighted' = DIVIDE(SUMX(Risk_CreditRiskScores, Risk_CreditRiskScores[PD] * Risk_CreditRiskScores[Score]), SUM(Risk_CreditRiskScores[Score]))
+		formatString: 0.00%
+		lineageTag: 8c310383-3e9f-4c88-b791-e17cb1b02a0e
+
+	column CustomerID
+		dataType: string
+		lineageTag: e5eb0ff3-eb01-45ff-bb45-d8c83a58fac2
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Score
+		dataType: int64
+		formatString: 0
+		lineageTag: d6a212d4-7557-4bfe-95ce-99557356b21d
+		sourceLineageTag: Score
+		summarizeBy: sum
+		sourceColumn: Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column PD
+		dataType: double
+		lineageTag: 2e53ec0b-389d-43d3-bbb8-01d5eccbba92
+		sourceLineageTag: PD
+		summarizeBy: sum
+		sourceColumn: PD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LGD
+		dataType: double
+		lineageTag: b2c21fa4-a05b-48ef-afb5-383595a0b9fa
+		sourceLineageTag: LGD
+		summarizeBy: sum
+		sourceColumn: LGD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column UpdatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f7c7e8d0-c542-427f-8ad2-bc26c42dd183
+		sourceLineageTag: UpdatedAt
+		summarizeBy: none
+		sourceColumn: UpdatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition risk_creditriskscores = entity
+		mode: directLake
+		source
+			entityName: risk_creditriskscores
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

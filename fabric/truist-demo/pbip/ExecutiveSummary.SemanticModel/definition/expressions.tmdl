@@ -1,0 +1,11 @@
+expression 'DirectLake - TruistDemoLakehouse' =
+		let
+		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/09fd4407-ad4f-42a6-92cd-c69bccd5daa1/5204c68f-07c2-4b01-8cd1-8b340ed5547c", [HierarchicalNavigation=true])
+		in
+		    Source
+	lineageTag: 45dfeac3-2210-40d7-ae77-c63e6959490f
+
+	annotation PBI_IncludeFutureArtifacts = False
+
+	annotation PBI_RemovedChildren = [{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[risk_dailycreditdeterioration]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[risk_customerrisktierdaily]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[aml_detectedanomalies]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[digital_engagementkpi_daily]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[aml_caseevents]"}},"objectType":"Table"}]
+

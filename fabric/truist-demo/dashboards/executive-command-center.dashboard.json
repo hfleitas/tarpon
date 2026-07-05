@@ -1,0 +1,180 @@
+{
+  "dashboardName": "Truist Executive Command Center",
+  "semanticModel": "TruistRiskDigitalTreasury",
+  "description": "Multi-page executive dashboard for risk discipline, AML posture, digital efficiency, and treasury modernization.",
+  "pages": [
+    {
+      "name": "ExecutiveSummary",
+      "purpose": "10-second C-suite status scan with cross-domain KPIs and trend context.",
+      "visuals": [
+        {
+          "title": "Credit Score Avg",
+          "visualType": "card",
+          "value": "[Credit Score Avg]"
+        },
+        {
+          "title": "AML Alert Count",
+          "visualType": "card",
+          "value": "[AML Alert Count]"
+        },
+        {
+          "title": "DAU",
+          "visualType": "card",
+          "value": "[DAU]"
+        },
+        {
+          "title": "FX Exposure",
+          "visualType": "card",
+          "value": "[FX Exposure]"
+        },
+        {
+          "title": "Credit and AML Trend (30 days)",
+          "visualType": "lineAndClusteredColumnChart",
+          "x": "CreditRiskScores[UpdatedAt]",
+          "lineY": "[Credit Score Avg]",
+          "columnY": "[AML Alert Count]"
+        },
+        {
+          "title": "Liquidity by Bucket",
+          "visualType": "clusteredBarChart",
+          "x": "TreasuryPositions[LiquidityBucket]",
+          "y": "[Liquidity by Bucket]"
+        }
+      ]
+    },
+    {
+      "name": "RiskAndAML",
+      "purpose": "Explain risk deterioration drivers and AML escalation pressure.",
+      "visuals": [
+        {
+          "title": "Early Warning Count by Severity",
+          "visualType": "clusteredColumnChart",
+          "x": "EarlyWarningSignals[Severity]",
+          "y": "[Early Warning Count]"
+        },
+        {
+          "title": "PD Weighted vs LGD Weighted",
+          "visualType": "multiRowCard",
+          "values": [
+            "[PD Weighted]",
+            "[LGD Weighted]"
+          ]
+        },
+        {
+          "title": "AML Alerts by Reason",
+          "visualType": "barChart",
+          "x": "AMLAlerts[Reason]",
+          "y": "[AML Alert Count]"
+        },
+        {
+          "title": "Suspicious Transaction Ratio",
+          "visualType": "gauge",
+          "value": "[Suspicious Transaction Ratio]",
+          "target": 0.03
+        },
+        {
+          "title": "High Severity Alerts",
+          "visualType": "card",
+          "value": "[High Severity Alerts]"
+        }
+      ]
+    },
+    {
+      "name": "DigitalAndTreasury",
+      "purpose": "Track digital adoption momentum alongside liquidity and FX concentration.",
+      "visuals": [
+        {
+          "title": "MAU",
+          "visualType": "card",
+          "value": "[MAU]"
+        },
+        {
+          "title": "Mobile Adoption %",
+          "visualType": "card",
+          "value": "[Mobile Adoption %]"
+        },
+        {
+          "title": "Engagement Score Trend",
+          "visualType": "lineChart",
+          "x": "digital_engagementevents[Timestamp]",
+          "y": "[Engagement Score]"
+        },
+        {
+          "title": "Device Mix by Event Type",
+          "visualType": "stackedColumnChart",
+          "x": "digital_engagementevents[EventType]",
+          "legend": "digital_engagementevents[Device]",
+          "y": "COUNT(digital_engagementevents[CustomerID])"
+        },
+        {
+          "title": "Currency Exposure Mix",
+          "visualType": "donutChart",
+          "legend": "TreasuryPositions[Currency]",
+          "value": "SUM(TreasuryPositions[Amount])"
+        },
+        {
+          "title": "Liquidity by Bucket",
+          "visualType": "clusteredBarChart",
+          "x": "TreasuryPositions[LiquidityBucket]",
+          "y": "[Liquidity by Bucket]"
+        }
+      ]
+    },
+    {
+      "name": "CustomerWatchlist",
+      "purpose": "Prioritized customer-level triage for executive follow-up.",
+      "visuals": [
+        {
+          "title": "Customers by Risk Tier",
+          "visualType": "stackedBarChart",
+          "x": "Customers[Segment]",
+          "legend": "Customers[RiskTier]",
+          "y": "COUNT(Customers[CustomerID])"
+        },
+        {
+          "title": "Top High-Risk Customers",
+          "visualType": "table",
+          "columns": [
+            "Customers[CustomerID]",
+            "Customers[Name]",
+            "Customers[Segment]",
+            "Customers[RiskTier]",
+            "Customers[DigitalAdoptionScore]",
+            "[PD Weighted]",
+            "[LGD Weighted]",
+            "[AML Alert Count]"
+          ],
+          "sortBy": [
+            "[AML Alert Count]",
+            "Customers[DigitalAdoptionScore]"
+          ],
+          "sortDirection": [
+            "desc",
+            "asc"
+          ],
+          "topN": 25
+        },
+        {
+          "title": "Copilot Prompt - Customer Movement",
+          "visualType": "textBox",
+          "text": "Explain why Customer 123 moved into high-risk tier."
+        },
+        {
+          "title": "Copilot Prompt - 24h AML Summary",
+          "visualType": "textBox",
+          "text": "Summarize AML alerts for the last 24 hours."
+        },
+        {
+          "title": "Copilot Prompt - Liquidity Narrative",
+          "visualType": "textBox",
+          "text": "Describe liquidity changes across buckets."
+        },
+        {
+          "title": "Copilot Prompt - Digital Narrative",
+          "visualType": "textBox",
+          "text": "Generate a client-ready narrative for digital engagement trends."
+        }
+      ]
+    }
+  ]
+}

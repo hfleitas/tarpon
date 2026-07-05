@@ -1,0 +1,51 @@
+table risk_earlywarningsignals
+	lineageTag: 3e0eb743-50fb-4acd-81f9-2dbfb7678a60
+	sourceLineageTag: [dbo].[risk_earlywarningsignals]
+
+	measure 'Early Warning Count' = COUNTROWS(Risk_EarlyWarningSignals)
+		formatString: #,0
+		lineageTag: 9a8e722f-d3c4-43f4-95a6-d00831eec431
+
+	column CustomerID
+		dataType: string
+		lineageTag: 89f517e5-7259-44f0-9c12-2ebe8771335c
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SignalType
+		dataType: string
+		lineageTag: 9a2b9692-9e77-47bf-80e2-a4def664ab99
+		sourceLineageTag: SignalType
+		summarizeBy: none
+		sourceColumn: SignalType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Severity
+		dataType: string
+		lineageTag: 6a31c1af-f236-4dc3-aa1b-dd5cdfda70d0
+		sourceLineageTag: Severity
+		summarizeBy: none
+		sourceColumn: Severity
+
+		annotation SummarizationSetBy = Automatic
+
+	column TriggeredAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e81c16c8-baef-4431-8c13-b5232101d03d
+		sourceLineageTag: TriggeredAt
+		summarizeBy: none
+		sourceColumn: TriggeredAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition risk_earlywarningsignals = entity
+		mode: directLake
+		source
+			entityName: risk_earlywarningsignals
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
+

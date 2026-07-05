@@ -1,0 +1,76 @@
+table digital_engagementevents
+	lineageTag: dbf95e13-7bec-44e3-bffb-60a18d79ca08
+	sourceLineageTag: [dbo].[digital_engagementevents]
+
+	measure DAU =
+			
+			VAR LastDataDateInContext =
+			 MAXX (
+			 ALLSELECTED ( Digital_EngagementEvents ),
+			 DATEVALUE ( Digital_EngagementEvents[Timestamp] )
+			 )
+			RETURN
+			CALCULATE (
+			 DISTINCTCOUNT ( Digital_EngagementEvents[CustomerID] ),
+			 FILTER (
+			 ALL ( Digital_EngagementEvents[Timestamp] ),
+			 DATEVALUE ( Digital_EngagementEvents[Timestamp] ) = LastDataDateInContext
+			 )
+			)
+		formatString: #,0
+		lineageTag: 72f1d728-0502-4d86-a3f2-2178b8da0def
+
+	measure 'Engagement Score' = VAR _weightedEvents = SUMX(Digital_EngagementEvents, SWITCH(Digital_EngagementEvents[EventType], "Login", 1, "BillPay", 3, "Transfer", 3, "CardControls", 2, "TreasuryApproval", 4, "ProfileUpdate", 1, 1)) VAR _activeCustomers = DISTINCTCOUNT(Digital_EngagementEvents[CustomerID]) RETURN DIVIDE(_weightedEvents, _activeCustomers)
+		formatString: 0.00
+		lineageTag: d3e0692c-80f2-43e0-b283-f8b1a8a159c2
+
+	measure MAU = VAR _end = TODAY() VAR _start = EDATE(_end, -1) RETURN CALCULATE(DISTINCTCOUNT(Digital_EngagementEvents[CustomerID]), FILTER(ALL(Digital_EngagementEvents[Timestamp]), DATEVALUE(Digital_EngagementEvents[Timestamp]) > _start && DATEVALUE(Digital_EngagementEvents[Timestamp]) <= _end))
+		formatString: #,0
+		lineageTag: e3a8d55c-4e2f-46cd-9e97-2d36a67fd970
+
+	measure 'Mobile Adoption %' = DIVIDE(CALCULATE(COUNTROWS(Digital_EngagementEvents), Digital_EngagementEvents[Device] = "Mobile"), COUNTROWS(Digital_EngagementEvents))
+		formatString: 0.00%
+		lineageTag: 83145028-55cf-4135-9a2e-212aca937f7f
+
+	column CustomerID
+		dataType: string
+		lineageTag: 930d61b2-1e46-4cdd-ae2d-c8baa13e37c9
+		sourceLineageTag: CustomerID
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column EventType
+		dataType: string
+		lineageTag: 9e68af47-6c8f-4b2c-81c6-9716128de773
+		sourceLineageTag: EventType
+		summarizeBy: none
+		sourceColumn: EventType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Device
+		dataType: string
+		lineageTag: 64a56031-8791-404e-9658-a3aaec320bb3
+		sourceLineageTag: Device
+		summarizeBy: none
+		sourceColumn: Device
+
+		annotation SummarizationSetBy = Automatic
+
+	column Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7ae0ff99-6fac-454d-81c9-87585b754586
+		sourceLineageTag: Timestamp
+		summarizeBy: none
+		sourceColumn: Timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	partition digital_engagementevents = entity
+		mode: directLake
+		source
+			entityName: digital_engagementevents
+			expressionSource: 'DirectLake - TruistDemoLakehouse'
