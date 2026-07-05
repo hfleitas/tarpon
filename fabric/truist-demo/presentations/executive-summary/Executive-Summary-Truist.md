@@ -47,7 +47,7 @@ Two themes to listen for. First, this book is fundamentally stable and well-dive
 
 **Presenter notes** *(~3 min)*
 
-Start with scale. We have a 10,000-customer retail book. Card one: 3,023 of them — roughly 30% — sit in our High risk tier. That is a meaningful share, and on the next slide I'll show you the surprising reason they're there, because it is NOT what most people assume.
+Start with scale. We have a 10,000-customer retail book. Card one: 3,023 of them — roughly 30% — sit in our High-risk tier. That is a meaningful share, and on the next slide I'll show you the surprising reason they're there, because it is NOT what most people assume.
 
 Card two, AML: in the most recent 24-hour window we generated 475 alerts touching 461 distinct customers, and 95 of those — one in five — were high severity, meaning a risk score of 80 or above. That 20% high-severity rate is the number to anchor on; raw alert volume matters less than how many are genuinely serious.
 
