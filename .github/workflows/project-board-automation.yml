@@ -69,18 +69,47 @@ jobs:
               }
             `;
 
+            const findIssueProjectItemQuery = `
+              query FindIssueProjectItem($issueId: ID!) {
+                node(id: $issueId) {
+                  ... on Issue {
+                    projectItems(first: 100) {
+                      nodes {
+                        id
+                        project {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
             let itemId = null;
             let addItemError = null;
 
             try {
-              const addItemResult = await github.graphql(addItemMutation, {
-                projectId,
-                contentId: issueNodeId,
+              const existingItemData = await github.graphql(findIssueProjectItemQuery, {
+                issueId: issueNodeId,
               });
-              itemId = addItemResult?.addProjectV2ItemById?.item?.id || null;
+              const existingItems = existingItemData?.node?.projectItems?.nodes || [];
+              itemId = existingItems.find((item) => item?.project?.id === projectId)?.id || null;
             } catch (error) {
-              addItemError = error;
-              core.info(`addProjectV2ItemById failed; falling back to searching project items: ${error?.message || error}`);
+              core.info(`Unable to query issue projectItems before add; proceeding with addProjectV2ItemById: ${error?.message || error}`);
+            }
+
+            if (!itemId) {
+              try {
+                const addItemResult = await github.graphql(addItemMutation, {
+                  projectId,
+                  contentId: issueNodeId,
+                });
+                itemId = addItemResult?.addProjectV2ItemById?.item?.id || null;
+              } catch (error) {
+                addItemError = error;
+                core.info(`addProjectV2ItemById failed; falling back to searching project items: ${error?.message || error}`);
+              }
             }
 
             const findItemQuery = `
