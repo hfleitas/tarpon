@@ -33,6 +33,8 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
   Semantic model definition with required measures.
 - `dashboards/*.dashboard.json`  
   JSON visual definitions for four domain dashboards plus a multi-page executive command center (`dashboards/executive-command-center.dashboard.json`).
+- `presentations/executive-summary/Executive-Summary-Truist.md`  
+  Presentation-ready narrative for the executive summary deck, with slide images, on-slide text, and speaker notes.
 
 ## Lakehouse Folder/Table Layout
 
@@ -119,6 +121,14 @@ The report experience is driven by these dashboard definitions:
 1. Increase row volumes in `sample-data/generate_ingestion_files.py` (`n_transactions`, `n_positions`, `n_alerts`, `n_events`).
 2. Optionally skew distributions (for example, raise AML `RiskScore`, change digital `Device` split, or shift treasury `Currency`/`LiquidityBucket` mix).
 3. Regenerate source files, rerun `pl_truist_e2e_orchestration`, then refresh the semantic model/report to reflect the new visual state.
+
+### Presentation package
+
+For a presenter-friendly walkthrough of the executive summary, use:
+
+- `presentations/executive-summary/Executive-Summary-Truist.md`
+
+That package mirrors the deck slide-by-slide and includes the exported slide images under `presentations/executive-summary/slides/`.
 
 ## Copilot Semantic Model Prompt Examples
 
