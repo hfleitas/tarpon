@@ -69,7 +69,7 @@ The report experience is driven by these dashboard definitions:
 - **Suspicious activity quality:** **Suspicious Transaction Ratio is 4.88%**, suggesting a non-trivial portion of monitored activity is being flagged as suspicious and may require further review and SAR decisions.
 - **Credit & portfolio risk:** Average customer **credit score is 575.51**, with **PD weighted at 3.30%** and **LGD weighted at 41.58%**, highlighting moderate credit quality and sizable loss severity if defaults materialize.
 - **Early warning signals:** Early warning indicators are evenly distributed by severity with **2,667 High**, **2,667 Medium**, and **2,666 Low** risk alerts, implying a broad-based risk signal rather than being concentrated in one band.
-- **Liquidity & treasury:** Liquidity is well-distributed across time buckets, with each band around **$28.2-$28.9B**, and total **FX exposure of ~$90.82B** across major currencies (GBP, JPY, EUR, USD, CAD) each around **$22-23B**, indicating large but diversified currency risk.
+- **Liquidity & treasury:** Liquidity is well-distributed across time buckets, with each band around **$28.2-$28.9B**, and total **FX exposure of ~$90.82B** across non-USD currencies (GBP, JPY, EUR, CAD) each around **$22-23B**, indicating large but diversified currency risk.
 - **Digital engagement:** The bank has **10,000 MAU** and approximately **5,000 DAU** (4,876 in the detailed executive rollup), while **mobile adoption remains at 37.93%**; customer event volumes are broadly similar across **Mobile**, **Tablet**, and **Web** for key activities such as Login, BillPay, Transfer, CardControls, ProfileUpdate, and TreasuryApproval.
 
 ### KPI and acronym definitions
