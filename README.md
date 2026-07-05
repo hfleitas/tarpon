@@ -17,7 +17,7 @@ This repository now has issue-to-project automation via:
    - label `in-progress` or `doing` -> `In Progress`
    - otherwise -> `Todo`
 3. Board **Scenario** is extracted from the issue's `### Scenario context` section (or `scenario:*` label).
-4. Board **Fix Progress** is computed from markdown task checklist completion in the issue body.
+4. Board **Fix Progress** is computed from markdown task checklist completion in the issue body (or forced to `100` when the issue is `closed`).
 
 ### Required configuration
 
