@@ -93,7 +93,12 @@ jobs:
 
             while (!itemId) {
               const data = await github.graphql(findItemQuery, { projectId, cursor });
-              const items = data.node.items.nodes || [];
+              const itemsConnection = data?.node?.items;
+              if (!itemsConnection) {
+                core.setFailed("Unable to access project items (check PROJECT_ID and token permissions).");
+                return;
+              }
+              const items = itemsConnection.nodes || [];
               const matchingItem = items.find(
                 (item) => item?.content?.__typename === "Issue" && item.content.id === issueNodeId
               );
