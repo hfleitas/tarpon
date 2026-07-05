@@ -145,7 +145,7 @@ jobs:
                 : todoOptionId;
 
             const updateSingleSelectFieldMutation = `
-              mutation UpdateSingleSelect($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              mutation UpdateSingleSelect($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: ID!) {
                 updateProjectV2ItemFieldValue(
                   input: {
                     projectId: $projectId
