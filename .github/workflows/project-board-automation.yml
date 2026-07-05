@@ -174,9 +174,8 @@ jobs:
             }
 
             const sectionMatch = issueBody.match(
-              /^###\s+Scenario(?:\s+context)?\s*$([\s\S]*?)(?=^###\s+|$)/im
+              /^###\s+Scenario(?:\s+context)?\s*\r?\n([\s\S]*?)(?=^###\s+|(?![\s\S]))/im
             );
-            const scenarioFromBody = sectionMatch?.[1]?.trim() || "";
             const scenarioLabel = labels.find((label) => label.startsWith("scenario:"));
             const scenario = scenarioFromBody || (scenarioLabel ? scenarioLabel.replace(/^scenario:/, "").trim() : "general");
 
