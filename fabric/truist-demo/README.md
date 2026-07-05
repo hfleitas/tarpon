@@ -33,6 +33,8 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
   Semantic model definition with required measures.
 - `dashboards/*.dashboard.json`  
   JSON visual definitions for four domain dashboards plus a multi-page executive command center (`dashboards/executive-command-center.dashboard.json`).
+- [`presentations/executive-summary/Executive-Summary-Truist.md`](presentations/executive-summary/Executive-Summary-Truist.md)  
+  Presentation-ready narrative for the executive summary deck, with slide images, on-slide text, and speaker notes.
 
 ## Lakehouse Folder/Table Layout
 
@@ -63,11 +65,11 @@ The report experience is driven by these dashboard definitions:
 
 ### Executive Summary narrative (presentation-ready)
 
-- **Financial crime & AML:** **5,000 AML alerts** raised in the last 24 hours, with **1,007 classified as high severity** (shown as **High Severity Alerts - Last 24 Hours**); leading alert drivers are **High-Risk Geography (82)**, **Counterparty Concern (78)**, **Structuring (76)**, and **Unusual Velocity (71)**, indicating elevated compliance and investigative workload.
+- **Financial crime & AML:** **475 AML alerts** raised in the last 24 hours, with **95 classified as high severity** (shown as **High Severity Alerts**); leading alert drivers are **Structuring (130)**, **Counterparty Concern (116)**, **Unusual Velocity (116)**, and **High-Risk Geography (113)**, indicating elevated compliance and investigative workload.
 - **Suspicious activity quality:** **Suspicious Transaction Ratio is 4.88%**, suggesting a non-trivial portion of monitored activity is being flagged as suspicious and may require further review and SAR decisions.
 - **Credit & portfolio risk:** Average customer **credit score is 575.51**, with **PD weighted at 3.30%** and **LGD weighted at 41.58%**, highlighting moderate credit quality and sizable loss severity if defaults materialize.
 - **Early warning signals:** Early warning indicators are evenly distributed by severity with **2,667 High**, **2,667 Medium**, and **2,666 Low** risk alerts, implying a broad-based risk signal rather than being concentrated in one band.
-- **Liquidity & treasury:** Liquidity is well-distributed across time buckets, with each band around **$28.2-$28.9B**, and total **FX exposure of ~$90.82B** across major currencies (GBP, JPY, EUR, USD, CAD) each around **$22-23B**, indicating large but diversified currency risk.
+- **Liquidity & treasury:** Liquidity is well-distributed across time buckets, with each band around **$28.2-$28.9B**, and total **FX exposure of ~$90.82B** across non-USD currencies (GBP, JPY, EUR, CAD) each around **$22-23B**, indicating large but diversified currency risk.
 - **Digital engagement:** The bank has **10,000 MAU** and approximately **5,000 DAU** (4,876 in the detailed executive rollup), while **mobile adoption remains at 37.93%**; customer event volumes are broadly similar across **Mobile**, **Tablet**, and **Web** for key activities such as Login, BillPay, Transfer, CardControls, ProfileUpdate, and TreasuryApproval.
 
 ### KPI and acronym definitions
@@ -119,6 +121,14 @@ The report experience is driven by these dashboard definitions:
 1. Increase row volumes in `sample-data/generate_ingestion_files.py` (`n_transactions`, `n_positions`, `n_alerts`, `n_events`).
 2. Optionally skew distributions (for example, raise AML `RiskScore`, change digital `Device` split, or shift treasury `Currency`/`LiquidityBucket` mix).
 3. Regenerate source files, rerun `pl_truist_e2e_orchestration`, then refresh the semantic model/report to reflect the new visual state.
+
+### Presentation package
+
+For a presenter-friendly walkthrough of the executive summary, use:
+
+- [`presentations/executive-summary/Executive-Summary-Truist.md`](presentations/executive-summary/Executive-Summary-Truist.md)
+
+That package mirrors the deck slide-by-slide and includes the exported slide images under `presentations/executive-summary/slides/`.
 
 ## Copilot Semantic Model Prompt Examples
 
