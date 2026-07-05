@@ -128,7 +128,8 @@ jobs:
             }
 
             if (!itemId) {
-              core.setFailed("Unable to locate the project item for this issue.");
+              const addItemErrorMessage = addItemError?.message ? ` addProjectV2ItemById error: ${addItemError.message}` : "";
+              core.setFailed(`Unable to locate the project item for this issue.${addItemErrorMessage}`);
               return;
             }
 
