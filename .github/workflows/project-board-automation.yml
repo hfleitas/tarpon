@@ -127,7 +127,7 @@ jobs:
             );
             const scenarioFromBody = sectionMatch?.[1]?.trim() || "";
             const scenarioLabel = labels.find((label) => label.startsWith("scenario:"));
-            const scenario = scenarioFromBody || (scenarioLabel ? scenarioLabel.replace(/^scenario:/, "").trim() : "General");
+            const scenario = scenarioFromBody || (scenarioLabel ? scenarioLabel.replace(/^scenario:/, "").trim() : "general");
 
             const totalChecklistItems = (issueBody.match(/^\s*[-*]\s+\[[ xX]\]\s+/gm) || []).length;
             const completedChecklistItems = (issueBody.match(/^\s*[-*]\s+\[[xX]\]\s+/gm) || []).length;
