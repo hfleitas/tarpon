@@ -2,7 +2,7 @@
 
 **Source:** Truist Executive Command Center · Tarpon workspace (Power BI)
 **Data current through:** July 4, 2026 · 3:59 PM  |  **Prepared:** July 5, 2026
-**Deck:** `Executive-Summary-Truist.pptx` · 7 slides · ~20–25 min presenting time
+**Deck:** Executive summary package (this folder) · 7 slides · ~20–25 min presenting time
 
 > This document reproduces each slide as an image, followed by its on-slide text and the presenter notes (2–5 minutes of talking points per slide).
 
