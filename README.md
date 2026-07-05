@@ -26,4 +26,4 @@ Add a repository secret named `PROJECT_AUTOMATION_TOKEN` with scopes:
 - `repo`
 - `project`
 
-The workflow falls back to `GITHUB_TOKEN`, but the explicit project-scoped token is recommended for reliable project updates.
+The workflow falls back to `GITHUB_TOKEN`, but project updates may fail depending on project ownership/permissions; `PROJECT_AUTOMATION_TOKEN` is recommended for reliable ProjectV2 updates.
