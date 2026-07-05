@@ -19,7 +19,9 @@ This repository now has issue-to-project automation via:
 3. Board **Scenario** is extracted from the issue's `### Scenario context` section (or `scenario:*` label).
 4. Board **Fix Progress** is computed from markdown task checklist completion in the issue body.
 
-### Required secret
+### Required configuration
+
+Add a repository variable `PROJECT_ID` (ProjectV2 node ID for the board).
 
 Add a repository secret named `PROJECT_AUTOMATION_TOKEN` (PAT) with permission to read this repo and write to Projects.
 
