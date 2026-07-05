@@ -21,9 +21,8 @@ This repository now has issue-to-project automation via:
 
 ### Required secret
 
-Add a repository secret named `PROJECT_AUTOMATION_TOKEN` with scopes:
+Add a repository secret named `PROJECT_AUTOMATION_TOKEN` (PAT) with permission to read this repo and write to Projects.
 
-- `repo`
-- `project`
+- Classic PAT scopes: `repo` (needed for private repos) and `project`
 
 The workflow falls back to `GITHUB_TOKEN`, but project updates may fail depending on project ownership/permissions; `PROJECT_AUTOMATION_TOKEN` is recommended for reliable ProjectV2 updates.
