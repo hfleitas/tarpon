@@ -39,6 +39,10 @@ jobs:
             const doneOptionId = process.env.STATUS_DONE_OPTION_ID;
             const scenarioFieldId = process.env.SCENARIO_FIELD_ID;
             const fixProgressFieldId = process.env.FIX_PROGRESS_FIELD_ID;
+            if (!projectId) {
+              core.setFailed("Missing PROJECT_ID (set repository variable PROJECT_ID to the ProjectV2 node ID).");
+              return;
+            }
 
             const issueNodeId = context.payload.issue.node_id;
             const issueState = context.payload.issue.state;
