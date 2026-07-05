@@ -97,7 +97,13 @@ jobs:
             let cursor = null;
 
             while (!itemId) {
-              const data = await github.graphql(findItemQuery, { projectId, cursor });
+              let data;
+              try {
+                data = await github.graphql(findItemQuery, { projectId, cursor });
+              } catch (error) {
+                core.setFailed(`Failed to query project items (check PROJECT_ID and token permissions): ${error.message}`);
+                return;
+              }
               const itemsConnection = data?.node?.items;
               if (!itemsConnection) {
                 core.setFailed("Unable to access project items (check PROJECT_ID and token permissions).");
