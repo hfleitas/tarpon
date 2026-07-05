@@ -33,7 +33,7 @@ This bundle contains runnable Microsoft Fabric assets for a demo focused on:
   Semantic model definition with required measures.
 - `dashboards/*.dashboard.json`  
   JSON visual definitions for four domain dashboards plus a multi-page executive command center (`dashboards/executive-command-center.dashboard.json`).
-- `presentations/executive-summary/Executive-Summary-Truist.md`  
+- [`presentations/executive-summary/Executive-Summary-Truist.md`](presentations/executive-summary/Executive-Summary-Truist.md)  
   Presentation-ready narrative for the executive summary deck, with slide images, on-slide text, and speaker notes.
 
 ## Lakehouse Folder/Table Layout
@@ -126,7 +126,7 @@ The report experience is driven by these dashboard definitions:
 
 For a presenter-friendly walkthrough of the executive summary, use:
 
-- `presentations/executive-summary/Executive-Summary-Truist.md`
+- [`presentations/executive-summary/Executive-Summary-Truist.md`](presentations/executive-summary/Executive-Summary-Truist.md)
 
 That package mirrors the deck slide-by-slide and includes the exported slide images under `presentations/executive-summary/slides/`.
 
