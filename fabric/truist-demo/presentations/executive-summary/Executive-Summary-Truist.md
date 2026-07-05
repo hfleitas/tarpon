@@ -129,7 +129,7 @@ Evenly laddered — no maturity concentration. Each bucket holds ~$28B across 3,
 **Watch item — FX concentration**
 
 - **$90.8B** FX exposure (all non-USD) — about 80% of the total book.
-- Currency mix is near-even: GBP $22.9B · JPY $22.9B · EUR $22.8B · USD $22.7B · CAD $22.2B.
+- Non-USD mix is near-even: GBP $22.9B · JPY $22.9B · EUR $22.8B · CAD $22.2B.
 
 **Presenter notes** *(~3–4 min)*
 
