@@ -175,7 +175,7 @@ The right-hand panel is written as a client-ready narrative — if you're presen
 **On-slide text**
 
 1. **Credit Risk** — Tier is behavior-driven, not credit-driven. Track digital disengagement and early-warning clusters as leading indicators — credit score alone will miss these customers.
-2. **AML** — 20% of last-24h alerts are high severity. Prioritize Structuring and High-Risk-Geography cases for analyst review; volume is steady, so focus on severity.
+2. **AML** — 20% of last-24h alerts are high severity. Prioritize Structuring and High-Risk Geography cases for analyst review; volume is steady, so focus on severity.
 3. **Liquidity** — Book is well-laddered, but 80% is non-USD. Quantify and hedge the $90.8B FX concentration; it is the single largest treasury risk on the page.
 4. **Digital** — Healthy 63% daily stickiness and mobile-first (38%). Protect the mobile experience and convert this engagement into treasury-product adoption.
 
