@@ -60,7 +60,6 @@ jobs:
             `;
 
             let itemId = null;
-            let addItemError = null;
 
             try {
               const addItemResult = await github.graphql(addItemMutation, {
@@ -69,7 +68,7 @@ jobs:
               });
               itemId = addItemResult?.addProjectV2ItemById?.item?.id || null;
             } catch (error) {
-              addItemError = error;
+              core.info(`addProjectV2ItemById failed; falling back to searching project items: ${error?.message || error}`);
             }
 
             const findItemQuery = `
