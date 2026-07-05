@@ -96,15 +96,15 @@
         {
           "title": "Engagement Score Trend",
           "visualType": "lineChart",
-          "x": "DigitalEngagement[Timestamp]",
+          "x": "digital_engagementevents[Timestamp]",
           "y": "[Engagement Score]"
         },
         {
           "title": "Device Mix by Event Type",
           "visualType": "stackedColumnChart",
-          "x": "DigitalEngagement[EventType]",
-          "legend": "DigitalEngagement[Device]",
-          "y": "COUNT(DigitalEngagement[CustomerID])"
+          "x": "digital_engagementevents[EventType]",
+          "legend": "digital_engagementevents[Device]",
+          "y": "COUNT(digital_engagementevents[CustomerID])"
         },
         {
           "title": "Currency Exposure Mix",
