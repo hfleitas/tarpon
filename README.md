@@ -27,7 +27,7 @@ Add a repository secret named `PROJECT_AUTOMATION_TOKEN` (PAT) with permission t
 
 - Classic PAT scopes: `repo` (needed for private repos) and `project`
 
-Optional (recommended) repository variables to avoid editing the workflow when Project field/option IDs change:
+If you set `PROJECT_ID` to a different ProjectV2 board, you must also set these project-specific field/option ID variables (defaults only match the board linked above):
 - `STATUS_FIELD_ID`, `STATUS_TODO_OPTION_ID`, `STATUS_IN_PROGRESS_OPTION_ID`, `STATUS_DONE_OPTION_ID`
 - `SCENARIO_FIELD_ID`
 - `FIX_PROGRESS_FIELD_ID`
