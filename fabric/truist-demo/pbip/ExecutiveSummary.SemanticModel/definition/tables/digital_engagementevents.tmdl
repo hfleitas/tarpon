@@ -2,7 +2,21 @@ table digital_engagementevents
 	lineageTag: dbf95e13-7bec-44e3-bffb-60a18d79ca08
 	sourceLineageTag: [dbo].[digital_engagementevents]
 
-	measure DAU = VAR _today = TODAY() RETURN CALCULATE(DISTINCTCOUNT(Digital_EngagementEvents[CustomerID]), FILTER(ALL(Digital_EngagementEvents[Timestamp]), DATEVALUE(Digital_EngagementEvents[Timestamp]) = _today))
+	measure DAU =
+			
+			VAR LastDataDateInContext =
+			 MAXX (
+			 ALLSELECTED ( Digital_EngagementEvents ),
+			 DATEVALUE ( Digital_EngagementEvents[Timestamp] )
+			 )
+			RETURN
+			CALCULATE (
+			 DISTINCTCOUNT ( Digital_EngagementEvents[CustomerID] ),
+			 FILTER (
+			 ALL ( Digital_EngagementEvents[Timestamp] ),
+			 DATEVALUE ( Digital_EngagementEvents[Timestamp] ) = LastDataDateInContext
+			 )
+			)
 		formatString: #,0
 		lineageTag: 72f1d728-0502-4d86-a3f2-2178b8da0def
 
@@ -60,4 +74,3 @@ table digital_engagementevents
 		source
 			entityName: digital_engagementevents
 			expressionSource: 'DirectLake - TruistDemoLakehouse'
-
