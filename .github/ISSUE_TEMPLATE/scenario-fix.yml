@@ -1,0 +1,37 @@
+name: Scenario fix
+description: Track a scenario, implementation steps, and fix progress.
+title: "[scenario] "
+labels: ["scenario:general"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template so the project board can track scenario and fix progress automatically.
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario context
+      description: What scenario, workflow, or user path is impacted?
+      placeholder: Describe the scenario in concrete terms.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_fix
+    attributes:
+      label: Expected fix
+      description: What outcome should this fix deliver?
+      placeholder: Define the expected behavior after the fix.
+    validations:
+      required: true
+  - type: textarea
+    id: implementation_steps
+    attributes:
+      label: Implementation checklist
+      description: Use markdown checklist syntax. The project board derives Fix Progress from this checklist.
+      value: |
+        - [ ] Reproduce the issue
+        - [ ] Implement the fix
+        - [ ] Validate the scenario
+    validations:
+      required: true
+
