@@ -55,11 +55,14 @@ jobs:
               }
             `;
 
+            let itemId = null;
+
             try {
-              await github.graphql(addItemMutation, {
+              const addItemResult = await github.graphql(addItemMutation, {
                 projectId,
                 contentId: issueNodeId,
               });
+              itemId = addItemResult?.addProjectV2ItemById?.item?.id || null;
             } catch (error) {
               if (!String(error.message || "").includes("already exists")) {
                 throw error;
@@ -88,7 +91,6 @@ jobs:
               }
             `;
 
-            let itemId = null;
             let cursor = null;
 
             while (!itemId) {
