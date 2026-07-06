@@ -218,20 +218,31 @@ export function CopilotPanel({
     if (!q || busy) return;
     setInput('');
     setBusy(true);
+    try {
+      const data = await snapshot(); // live read every time → reflects edits
+      const answer = answerQuestion(q, data);
+      const id = crypto.randomUUID();
+      setTurns((prev) => [...prev, { id, question: q, answer, revealed: 0, thinking: true }]);
 
-    const data = await snapshot(); // live read every time → reflects edits
-    const answer = answerQuestion(q, data);
-    const id = crypto.randomUUID();
-    setTurns((prev) => [...prev, { id, question: q, answer, revealed: 0, thinking: true }]);
-
-    // Stream the reasoning steps one by one for a genuine "thinking" feel.
-    for (let i = 1; i <= answer.steps.length; i++) {
-      await new Promise((r) => setTimeout(r, 260));
-      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, revealed: i } : t)));
+      // Stream the reasoning steps one by one for a genuine "thinking" feel.
+      for (let i = 1; i <= answer.steps.length; i++) {
+        await new Promise((r) => setTimeout(r, 260));
+        setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, revealed: i } : t)));
+      }
+      await new Promise((r) => setTimeout(r, 200));
+      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, thinking: false } : t)));
+    } catch (error) {
+      console.error('Failed to load Copilot snapshot.', error);
+      const detail = error instanceof Error ? ` (${error.message})` : '';
+      const answer: AgentAnswer = {
+        steps: [{ label: 'Refresh live Rayfin data', detail: 'Snapshot failed before reasoning could start.' }],
+        blocks: [{ kind: 'callout', tone: 'warn', text: `I couldn't load the latest Rayfin data${detail}. Please try again.` }],
+        followups: [],
+      };
+      setTurns((prev) => [...prev, { id: crypto.randomUUID(), question: q, answer, revealed: answer.steps.length, thinking: false }]);
+    } finally {
+      setBusy(false);
     }
-    await new Promise((r) => setTimeout(r, 200));
-    setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, thinking: false } : t)));
-    setBusy(false);
   };
 
   if (!open) return null;
