@@ -64,6 +64,14 @@ function getRealClient(): RayfinClient<FinSightAppSchema> {
   return realClient;
 }
 
+function isFabricEmbedded(): boolean {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
 function getFabricAuthOptions(): FabricAuthOptions {
   if (!fabricAuthEnabled) {
     throw new Error('Fabric auth is not enabled for the current runtime.');
@@ -74,7 +82,7 @@ function getFabricAuthOptions(): FabricAuthOptions {
     projectId: fabricItemId,
     fabricPortalUrl,
     returnOrigin: window.location.origin,
-    fabricEmbedded: window.self !== window.top,
+    fabricEmbedded: isFabricEmbedded(),
   };
 }
 
