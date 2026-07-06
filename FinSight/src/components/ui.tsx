@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import { useId } from 'react';
 import { T } from '../theme';
 
@@ -74,9 +74,18 @@ export function Kpi({
   trend?: { dir: 'up' | 'down' | 'flat'; text: string; good?: boolean };
   onClick?: () => void;
 }) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    onClick();
+  };
+
   return (
     <div
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? 'button' : undefined}
       style={{
         position: 'relative',
         background: T.card,
@@ -96,6 +105,18 @@ export function Kpi({
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = T.shadow;
+      }}
+      onFocus={(e) => {
+        if (!onClick) return;
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = T.shadowLg;
+        e.currentTarget.style.outline = `2px solid ${T.primary}`;
+        e.currentTarget.style.outlineOffset = '2px';
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = T.shadow;
+        e.currentTarget.style.outline = 'none';
       }}
     >
       <div style={{ position: 'absolute', top: 0, insetInline: 0, height: 3, background: accent }} />
