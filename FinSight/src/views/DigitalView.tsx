@@ -10,27 +10,48 @@ import {
   deleteDigitalInitiative,
   type DigitalInitiative,
 } from '../services/finsight';
-import { T, formatCompact, formatDate, statusColors } from '../theme';
+import { T, formatCompact, statusColors } from '../theme';
 
 const CHANNELS = ['Mobile', 'Web', 'Tablet'];
 const CATEGORIES = ['Adoption', 'Onboarding', 'BillPay', 'CardControls', 'Retention', 'Engagement'];
 const METRICS = ['DAU', 'MAU', 'Mobile Adoption %', 'Engagement Score'];
 const STATUSES = ['Planned', 'In Progress', 'Live', 'Complete'];
 const CHANNEL_COLORS: Record<string, string> = { Mobile: T.gbp, Tablet: T.jpy, Web: T.eur };
+const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+const dueDateFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
 
 type Draft = Omit<DigitalInitiative, 'id' | 'user_id'>;
 
 const pad2 = (value: number) => String(value).padStart(2, '0');
-const toLocalDate = (d: Date | string) => (d instanceof Date ? d : new Date(d));
-const toInput = (d: Date | string) => {
-  const date = toLocalDate(d);
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+const toDateOnlyUtc = (d: Date | string) => {
+  if (typeof d === 'string') {
+    const match = d.match(DATE_ONLY);
+    if (match) return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    const parsed = new Date(d);
+    return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
+  }
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 };
-const fromInput = (value: string) => new Date(`${value}T00:00:00`);
+const toInput = (d: Date | string) => {
+  const date = toDateOnlyUtc(d);
+  return `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+};
+const fromInput = (value: string) => toDateOnlyUtc(value);
+const formatDueDate = (d: Date | string) => dueDateFormatter.format(toDateOnlyUtc(d));
+const todayPlusDaysUtc = (days: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+};
 const emptyDraft = (): Draft => ({
   name: '', channel: 'Mobile', category: 'Adoption', metric: 'DAU',
   targetValue: 6000, currentValue: 4876, status: 'Planned', owner: '',
-  dueDate: new Date(Date.now() + 21 * 86400000), notes: '',
+  dueDate: todayPlusDaysUtc(21), notes: '',
 });
 
 function fmtMetric(metric: string, v: number): string {
@@ -205,7 +226,7 @@ function InitiativeRow({ r, onClick }: { r: DigitalInitiative; onClick: () => vo
         <div className="tnum" style={{ fontSize: 11.5, color: T.inkSoft, whiteSpace: 'nowrap', fontWeight: 600 }}>
           {fmtMetric(r.metric, r.currentValue)} <span style={{ color: T.faint }}>/ {fmtMetric(r.metric, r.targetValue)}</span>
         </div>
-        <div style={{ fontSize: 11, color: T.faint, whiteSpace: 'nowrap', minWidth: 58, textAlign: 'right' }}>{formatDate(r.dueDate)}</div>
+        <div style={{ fontSize: 11, color: T.faint, whiteSpace: 'nowrap', minWidth: 58, textAlign: 'right' }}>{formatDueDate(r.dueDate)}</div>
       </div>
     </li>
   );
