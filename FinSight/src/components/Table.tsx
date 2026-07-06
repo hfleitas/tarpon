@@ -21,6 +21,12 @@ export function DataTable<T extends { id: string }>({
   onRowClick?: (row: T) => void;
   empty?: ReactNode;
 }) {
+  const handleRowKeyDown = (event: React.KeyboardEvent<HTMLTableRowElement>, row: T) => {
+    if (!onRowClick || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    onRowClick(row);
+  };
+
   return (
     <div className="scroll-y" style={{ width: '100%', overflowX: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
@@ -63,9 +69,22 @@ export function DataTable<T extends { id: string }>({
               <tr
                 key={row.id}
                 onClick={() => onRowClick?.(row)}
+                onKeyDown={(event) => handleRowKeyDown(event, row)}
+                tabIndex={onRowClick ? 0 : undefined}
+                role={onRowClick ? 'button' : undefined}
                 style={{ cursor: onRowClick ? 'pointer' : 'default', transition: 'background 0.12s' }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = '#f7f9fe')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                onFocus={(e) => {
+                  if (!onRowClick) return;
+                  e.currentTarget.style.outline = `2px solid ${T.primary}`;
+                  e.currentTarget.style.outlineOffset = '-2px';
+                  e.currentTarget.style.background = '#f7f9fe';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                  e.currentTarget.style.background = 'transparent';
+                }}
               >
                 {columns.map((c) => (
                   <td
