@@ -75,7 +75,6 @@ function ResponsiveStyles() {
       @media (max-width: 720px) {
         .aml-grid { grid-template-columns: 1fr !important; }
         .trend-grid { grid-template-columns: 1fr !important; }
-        .fs-sensitivity span:last-child, .fs-username { }
       }
       @media (max-width: 560px) {
         .fs-sensitivity { display: none !important; }
