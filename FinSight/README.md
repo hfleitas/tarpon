@@ -42,7 +42,7 @@ Create the production bundle:
 npm run build
 ```
 
-This runs TypeScript compilation, builds the Vite app, and writes the static output to `dist/`.
+This runs TypeScript compilation for both the app and Rayfin data model, builds the Vite app, and writes the static output to `dist/`.
 
 ## Deploy with Rayfin
 
