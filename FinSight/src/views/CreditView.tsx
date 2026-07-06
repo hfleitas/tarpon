@@ -33,7 +33,13 @@ export function CreditView() {
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [saving, setSaving] = useState(false);
 
-  const load = async () => { setRows(await getCreditReviews()); setLoading(false); };
+  const load = async () => {
+    try {
+      setRows(await getCreditReviews());
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => { void load(); }, []);
 
   const openNew = () => { setEditing(null); setDraft(emptyDraft()); setOpen(true); };
