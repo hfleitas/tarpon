@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { useId } from 'react';
 import { T } from '../theme';
 
 // ── Card ─────────────────────────────────────────────────────────────────────
@@ -279,6 +280,7 @@ export function Sparkline({
   color?: string;
   fill?: boolean;
 }) {
+  const sparklineId = useId().replace(/:/g, '');
   if (values.length < 2) return <div style={{ height, width }} />;
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -291,7 +293,7 @@ export function Sparkline({
   });
   const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const area = `${line} L${pts[pts.length - 1][0].toFixed(1)},${height} L${pts[0][0].toFixed(1)},${height} Z`;
-  const gid = `sg-${color.replace('#', '')}`;
+  const gid = `sg-${color.replace('#', '')}-${sparklineId}`;
   return (
     <svg width={width} height={height} style={{ display: 'block' }}>
       <defs>
