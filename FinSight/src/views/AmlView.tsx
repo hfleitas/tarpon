@@ -39,8 +39,11 @@ export function AmlView() {
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    setRows(await getAmlCases());
-    setLoading(false);
+    try {
+      setRows(await getAmlCases());
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => { void load(); }, []);
 
