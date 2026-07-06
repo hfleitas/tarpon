@@ -38,9 +38,10 @@ automation. FinSight is the operational layer where staff ACT on those signals.
 
 ## Design
 Fabric / Power BI look — tokens in `src/theme.ts`, primitives in
-`src/components/`. Soft lavender-blue canvas, floating white cards, azure primary
-with a navy/magenta/purple/orange categorical set, tabular KPI numbers, and a
-"Confidential · Internal Only" sensitivity pill. Keep this cohesive when editing.
+`src/components/`. Soft lavender-purple canvas, floating white cards, Truist
+Purple primary with a Truist Teal accent, GBP/JPY/EUR/USD/CAD currency colors,
+tabular KPI numbers, and a "Confidential · Internal Only" sensitivity pill.
+Keep this cohesive when editing.
 
 Deploy to real Fabric is done with the rayfin CLI (`rayfin up`), outside the
 preview.
