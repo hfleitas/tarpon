@@ -8,7 +8,6 @@ services:
       enabled: true
     allowedRedirectUris:
       - http://localhost:5173
-      - https://hardy-trail-0454074f7f-westcentralus.webapp.msit.fabricapps.net
   data:
     enabled: true
     dialect: mssql

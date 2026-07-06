@@ -41,7 +41,20 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 }
 
 export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} style={{ ...fieldBase, ...props.style }} onFocus={focusOn} onBlur={focusOff} />;
+  return (
+    <input
+      {...props}
+      style={{ ...fieldBase, ...props.style }}
+      onFocus={(e) => {
+        focusOn(e);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        focusOff(e);
+        props.onBlur?.(e);
+      }}
+    />
+  );
 }
 
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
@@ -49,8 +62,14 @@ export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
     <textarea
       {...props}
       style={{ ...fieldBase, resize: 'vertical', minHeight: 74, lineHeight: 1.5, ...props.style }}
-      onFocus={focusOn}
-      onBlur={focusOff}
+      onFocus={(e) => {
+        focusOn(e);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        focusOff(e);
+        props.onBlur?.(e);
+      }}
     />
   );
 }

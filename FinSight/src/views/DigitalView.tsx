@@ -20,7 +20,13 @@ const CHANNEL_COLORS: Record<string, string> = { Mobile: T.gbp, Tablet: T.jpy, W
 
 type Draft = Omit<DigitalInitiative, 'id' | 'user_id'>;
 
-const toInput = (d: Date | string) => new Date(d).toISOString().slice(0, 10);
+const pad2 = (value: number) => String(value).padStart(2, '0');
+const toLocalDate = (d: Date | string) => (d instanceof Date ? d : new Date(d));
+const toInput = (d: Date | string) => {
+  const date = toLocalDate(d);
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+};
+const fromInput = (value: string) => new Date(`${value}T00:00:00`);
 const emptyDraft = (): Draft => ({
   name: '', channel: 'Mobile', category: 'Adoption', metric: 'DAU',
   targetValue: 6000, currentValue: 4876, status: 'Planned', owner: '',
@@ -163,7 +169,7 @@ export function DigitalView() {
         </Row>
         <Row>
           <Field label="Owner"><TextInput value={draft.owner} onChange={(e) => setDraft({ ...draft, owner: e.target.value })} placeholder="Product owner" /></Field>
-          <Field label="Due date"><TextInput type="date" value={toInput(draft.dueDate)} onChange={(e) => setDraft({ ...draft, dueDate: new Date(e.target.value) })} /></Field>
+          <Field label="Due date"><TextInput type="date" value={toInput(draft.dueDate)} onChange={(e) => setDraft({ ...draft, dueDate: fromInput(e.target.value) })} /></Field>
         </Row>
         <Field label="Notes"><TextArea value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Hypothesis, rollout plan, results…" /></Field>
       </Drawer>

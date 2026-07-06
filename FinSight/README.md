@@ -53,3 +53,5 @@ npm run deploy
 ```
 
 This runs `rayfin up` using the app configuration in `rayfin/rayfin.yml`. Make sure you are authenticated and targeting the correct Rayfin or Fabric environment before deploying.
+
+Keep `rayfin/rayfin.yml` portable by checking in only the localhost redirect URI. After deployment, add the environment's hosted app URL to `allowedRedirectUris` through your environment-specific deployment workflow before testing interactive sign-in on the public Fabric Apps URL.
