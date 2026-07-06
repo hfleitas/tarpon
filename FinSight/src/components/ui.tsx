@@ -52,7 +52,7 @@ export function Card({
           {right}
         </header>
       )}
-      <div style={{ padding: title ? pad : pad }}>{children}</div>
+      <div style={{ padding: pad }}>{children}</div>
     </section>
   );
 }
