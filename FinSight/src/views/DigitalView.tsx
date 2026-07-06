@@ -43,7 +43,13 @@ export function DigitalView() {
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [saving, setSaving] = useState(false);
 
-  const load = async () => { setRows(await getDigitalInitiatives()); setLoading(false); };
+  const load = async () => {
+    try {
+      setRows(await getDigitalInitiatives());
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => { void load(); }, []);
 
   const openNew = () => { setEditing(null); setDraft(emptyDraft()); setOpen(true); };
