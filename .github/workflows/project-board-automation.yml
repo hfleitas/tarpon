@@ -1,0 +1,255 @@
+name: Project board issue automation
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+      - closed
+      - labeled
+      - unlabeled
+
+permissions:
+  contents: read
+  issues: read
+  projects: write
+
+jobs:
+  sync-project-board:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync issue with project board
+        uses: actions/github-script@v7
+        env:
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          STATUS_FIELD_ID: ${{ vars.STATUS_FIELD_ID || 'PVTSSF_lAHOAEwPKM4Bcd0gzhXGad0' }}
+          STATUS_TODO_OPTION_ID: ${{ vars.STATUS_TODO_OPTION_ID || 'f75ad846' }}
+          STATUS_IN_PROGRESS_OPTION_ID: ${{ vars.STATUS_IN_PROGRESS_OPTION_ID || '47fc9ee4' }}
+          STATUS_DONE_OPTION_ID: ${{ vars.STATUS_DONE_OPTION_ID || '98236657' }}
+          SCENARIO_FIELD_ID: ${{ vars.SCENARIO_FIELD_ID || 'PVTF_lAHOAEwPKM4Bcd0gzhXGah0' }}
+          FIX_PROGRESS_FIELD_ID: ${{ vars.FIX_PROGRESS_FIELD_ID || 'PVTF_lAHOAEwPKM4Bcd0gzhXGah4' }}
+        with:
+          github-token: ${{ secrets.PROJECT_AUTOMATION_TOKEN != '' && secrets.PROJECT_AUTOMATION_TOKEN || github.token }}
+          script: |
+            const projectId = process.env.PROJECT_ID;
+            const statusFieldId = process.env.STATUS_FIELD_ID;
+            const todoOptionId = process.env.STATUS_TODO_OPTION_ID;
+            const inProgressOptionId = process.env.STATUS_IN_PROGRESS_OPTION_ID;
+            const doneOptionId = process.env.STATUS_DONE_OPTION_ID;
+            const scenarioFieldId = process.env.SCENARIO_FIELD_ID;
+            const fixProgressFieldId = process.env.FIX_PROGRESS_FIELD_ID;
+            if (!projectId) {
+              core.setFailed("Missing PROJECT_ID (set repository variable PROJECT_ID to the ProjectV2 node ID).");
+              return;
+            }
+
+            if (!statusFieldId || !todoOptionId || !inProgressOptionId || !doneOptionId || !scenarioFieldId || !fixProgressFieldId) {
+              core.setFailed("Project field/option IDs are not configured. Set the workflow/repository vars for STATUS_FIELD_ID, STATUS_*_OPTION_ID, SCENARIO_FIELD_ID, and FIX_PROGRESS_FIELD_ID.");
+              return;
+            }
+
+            const issueNodeId = context.payload.issue.node_id;
+            const issueState = context.payload.issue.state;
+            const issueBody = context.payload.issue.body || "";
+            const labels = (context.payload.issue.labels || []).map((label) =>
+              String(label.name || "").toLowerCase()
+            );
+
+            const addItemMutation = `
+              mutation AddItem($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                  item { id }
+                }
+              }
+            `;
+
+            const findIssueProjectItemQuery = `
+              query FindIssueProjectItem($issueId: ID!) {
+                node(id: $issueId) {
+                  ... on Issue {
+                    projectItems(first: 100) {
+                      nodes {
+                        id
+                        project {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            let itemId = null;
+            let addItemError = null;
+
+            try {
+              const existingItemData = await github.graphql(findIssueProjectItemQuery, {
+                issueId: issueNodeId,
+              });
+              const existingItems = existingItemData?.node?.projectItems?.nodes || [];
+              itemId = existingItems.find((item) => item?.project?.id === projectId)?.id || null;
+            } catch (error) {
+              core.info(`Unable to query issue projectItems before add; proceeding with addProjectV2ItemById: ${error?.message || error}`);
+            }
+
+            if (!itemId) {
+              try {
+                const addItemResult = await github.graphql(addItemMutation, {
+                  projectId,
+                  contentId: issueNodeId,
+                });
+                itemId = addItemResult?.addProjectV2ItemById?.item?.id || null;
+              } catch (error) {
+                addItemError = error;
+                core.info(`addProjectV2ItemById failed; falling back to searching project items: ${error?.message || error}`);
+              }
+            }
+
+            const findItemQuery = `
+              query FindItem($projectId: ID!, $cursor: String) {
+                node(id: $projectId) {
+                  ... on ProjectV2 {
+                    items(first: 100, after: $cursor) {
+                      nodes {
+                        id
+                        content {
+                          __typename
+                          ... on Issue { id }
+                        }
+                      }
+                      pageInfo {
+                        hasNextPage
+                        endCursor
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            let cursor = null;
+
+            while (!itemId) {
+              let data;
+              try {
+                data = await github.graphql(findItemQuery, { projectId, cursor });
+              } catch (error) {
+                core.setFailed(`Failed to query project items (check PROJECT_ID and token permissions): ${error.message}`);
+                return;
+              }
+              const itemsConnection = data?.node?.items;
+              if (!itemsConnection) {
+                core.setFailed("Unable to access project items (check PROJECT_ID and token permissions).");
+                return;
+              }
+              const items = itemsConnection.nodes || [];
+              const matchingItem = items.find(
+                (item) => item?.content?.__typename === "Issue" && item.content.id === issueNodeId
+              );
+
+              if (matchingItem) {
+                itemId = matchingItem.id;
+                break;
+              }
+
+              const pageInfo = data.node.items.pageInfo;
+              if (!pageInfo.hasNextPage) {
+                break;
+              }
+
+              cursor = pageInfo.endCursor;
+            }
+
+            if (!itemId) {
+              const addItemErrorMessage = addItemError?.message ? ` addProjectV2ItemById error: ${addItemError.message}` : "";
+              core.setFailed(`Unable to locate the project item for this issue.${addItemErrorMessage}`);
+              return;
+            }
+
+            const sectionMatch = issueBody.match(
+              /^###\s+Scenario(?:\s+context)?\s*\r?\n([\s\S]*?)(?=^###\s+|(?![\s\S]))/im
+            );
+            const scenarioFromBody = sectionMatch?.[1]?.trim().split(/\r?\n/)[0]?.trim();
+            const scenarioLabel = labels.find((label) => label.startsWith("scenario:"));
+            const scenario = scenarioFromBody || (scenarioLabel ? scenarioLabel.replace(/^scenario:/, "").trim() : "general");
+            const totalChecklistItems = (issueBody.match(/^\s*[-*]\s+\[[ xX]\]\s+/gm) || []).length;
+            const completedChecklistItems = (issueBody.match(/^\s*[-*]\s+\[[xX]\]\s+/gm) || []).length;
+            const fixProgress = issueState === "closed"
+              ? 100
+              : totalChecklistItems > 0
+                ? Math.round((completedChecklistItems / totalChecklistItems) * 100)
+                : 0;
+
+            const statusOptionId = issueState === "closed"
+              ? doneOptionId
+              : labels.includes("in-progress") || labels.includes("doing")
+                ? inProgressOptionId
+                : todoOptionId;
+
+            const updateSingleSelectFieldMutation = `
+              mutation UpdateSingleSelect($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: ID!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { singleSelectOptionId: $optionId }
+                  }
+                ) {
+                  projectV2Item { id }
+                }
+              }
+            `;
+
+            const updateTextFieldMutation = `
+              mutation UpdateText($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: String!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { text: $value }
+                  }
+                ) {
+                  projectV2Item { id }
+                }
+              }
+            `;
+
+            const updateNumberFieldMutation = `
+              mutation UpdateNumber($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: Float!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { number: $value }
+                  }
+                ) {
+                  projectV2Item { id }
+                }
+              }
+            `;
+
+            await github.graphql(updateSingleSelectFieldMutation, {
+              projectId,
+              itemId,
+              fieldId: statusFieldId,
+              optionId: statusOptionId,
+            });
+
+            await github.graphql(updateTextFieldMutation, {
+              projectId,
+              itemId,
+              fieldId: scenarioFieldId,
+              value: scenario,
+            });
+
+            await github.graphql(updateNumberFieldMutation, {
+              projectId,
+              itemId,
+              fieldId: fixProgressFieldId,
+              value: fixProgress,
+            });
