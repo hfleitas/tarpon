@@ -1,0 +1,30 @@
+{
+  "name": "finsight",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "rayfin env --framework vite",
+    "prebuild": "rayfin env --framework vite",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "deploy": "rayfin up"
+  },
+  "dependencies": {
+    "@microsoft/rayfin-auth-provider-fabric": "^1.33.2",
+    "@microsoft/rayfin-client": "^1.33.2",
+    "@microsoft/rayfin-core": "^1.33.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@microsoft/rayfin-cli": "^1.33.2",
+    "@microsoft/rayfin-data": "^1.33.2",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^4.0.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  }
+}

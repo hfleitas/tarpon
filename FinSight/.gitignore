@@ -1,0 +1,18 @@
+node_modules
+dist
+*.local
+.env
+.env.*
+!.env.example
+
+# Fabric demo reference assets (the source Truist bundle) — reference-only,
+# not used by the app at runtime. The app hardcodes the demo figures in
+# src/rayfin/seed.ts, so nothing here is imported.
+fabric/
+
+# TypeScript incremental build info (regenerated on each build)
+tsconfig.tsbuildinfo
+
+# Rayfin generated deployment state
+rayfin/.temp/
+rayfin/.deployments.json
