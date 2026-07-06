@@ -23,13 +23,24 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     void (async () => {
-      const [a, c, t, d] = await Promise.all([
-        getAmlCases(), getCreditReviews(), getTreasuryActions(), getDigitalInitiatives(),
-      ]);
-      setAml(a); setCredit(c); setTreasury(t); setDigital(d);
-      setLoading(false);
+      try {
+        const [a, c, t, d] = await Promise.all([
+          getAmlCases(), getCreditReviews(), getTreasuryActions(), getDigitalInitiatives(),
+        ]);
+        if (!cancelled) {
+          setAml(a); setCredit(c); setTreasury(t); setDigital(d);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) return <Loading />;
