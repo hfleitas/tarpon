@@ -7,6 +7,7 @@ export function Card({
   children,
   style,
   pad = 20,
+  headerPad,
   title,
   subtitle,
   right,
@@ -15,11 +16,14 @@ export function Card({
   children?: ReactNode;
   style?: CSSProperties;
   pad?: number;
+  headerPad?: number;
   title?: ReactNode;
   subtitle?: ReactNode;
   right?: ReactNode;
   accent?: string;
 }) {
+  const resolvedHeaderPad = headerPad ?? (pad === 0 ? 20 : pad);
+
   return (
     <section
       style={{
@@ -42,7 +46,7 @@ export function Card({
             alignItems: 'flex-start',
             justifyContent: 'space-between',
             gap: 12,
-            padding: `14px ${pad}px`,
+            padding: `14px ${resolvedHeaderPad}px`,
             borderBottom: `1px solid ${T.border}`,
           }}
         >
@@ -66,6 +70,8 @@ export function Kpi({
   accent = T.primary,
   trend,
   onClick,
+  sparkValues,
+  sparkColor,
 }: {
   label: string;
   value: ReactNode;
@@ -73,6 +79,8 @@ export function Kpi({
   accent?: string;
   trend?: { dir: 'up' | 'down' | 'flat'; text: string; good?: boolean };
   onClick?: () => void;
+  sparkValues?: number[];
+  sparkColor?: string;
 }) {
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
@@ -143,6 +151,16 @@ export function Kpi({
         )}
         {sub && <span style={{ fontSize: 11.5, color: T.muted }}>{sub}</span>}
       </div>
+      {sparkValues && sparkValues.length > 1 && (
+        <div style={{ marginTop: 8 }}>
+          <Sparkline
+            values={sparkValues}
+            width={180}
+            height={34}
+            color={sparkColor ?? accent}
+          />
+        </div>
+      )}
     </div>
   );
 }

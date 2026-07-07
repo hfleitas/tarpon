@@ -26,6 +26,7 @@ export function DataTable<T extends { id: string }>({
     event.preventDefault();
     onRowClick(row);
   };
+  const horizontalPad = 20;
 
   return (
     <div className="scroll-y" style={{ width: '100%', overflowX: 'auto' }}>
@@ -37,7 +38,7 @@ export function DataTable<T extends { id: string }>({
                 key={c.key}
                 style={{
                   textAlign: c.align ?? 'left',
-                  padding: '10px 14px',
+                  padding: `11px ${horizontalPad}px`,
                   fontSize: 11,
                   fontWeight: 700,
                   color: T.muted,
@@ -91,6 +92,7 @@ export function DataTable<T extends { id: string }>({
                     key={c.key}
                     style={{
                       padding: '12px 14px',
+                      paddingInline: horizontalPad,
                       textAlign: c.align ?? 'left',
                       borderBottom: `1px solid ${T.border}`,
                       color: T.inkSoft,

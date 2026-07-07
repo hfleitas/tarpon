@@ -69,6 +69,10 @@ export function CreditView() {
   const pdW = totalExposure ? rows.reduce((s, r) => s + r.pd * r.exposure, 0) / totalExposure : 0;
   const lgdW = totalExposure ? rows.reduce((s, r) => s + r.lgd * r.exposure, 0) / totalExposure : 0;
   const avgScore = rows.length ? rows.reduce((s, r) => s + r.creditScore, 0) / rows.length : 0;
+  const scoreTrend = [568, 570, 571, 573, 572, 574, 575, 574, Math.round(avgScore)];
+  const pdTrend = [2.6, 2.7, 2.8, 2.9, 2.8, 3.0, 3.1, 3.0, Number(pdW.toFixed(2))];
+  const lgdTrend = [38.8, 39.2, 39.8, 40.5, 40.9, 41.3, 41.1, 41.4, Number(lgdW.toFixed(1))];
+  const exposureTrend = [0.72, 0.75, 0.79, 0.81, 0.84, 0.86, 0.88, 0.91, totalExposure / 1_000_000];
   const bySeverity = SEVERITIES.slice().reverse().map((sev) => ({
     label: sev,
     value: rows.filter((r) => r.severity === sev).length,
@@ -112,10 +116,10 @@ export function CreditView() {
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14 }}>
-        <Kpi label="Avg Credit Score" value={<span className="tnum">{avgScore.toFixed(0)}</span>} accent={T.primary} sub="portfolio mean" />
-        <Kpi label="PD Weighted" value={`${pdW.toFixed(2)}%`} accent={T.med} sub="balance-weighted" />
-        <Kpi label="LGD Weighted" value={`${lgdW.toFixed(1)}%`} accent={T.high} sub="loss severity" />
-        <Kpi label="Balance at Risk" value={formatCompactUsd(totalExposure)} accent={T.usd} sub={`${rows.length} reviews`} />
+        <Kpi label="Avg Credit Score" value={<span className="tnum">{avgScore.toFixed(0)}</span>} accent={T.primary} sub="portfolio mean" sparkValues={scoreTrend} />
+        <Kpi label="PD Weighted" value={`${pdW.toFixed(2)}%`} accent={T.med} sub="balance-weighted" sparkValues={pdTrend} />
+        <Kpi label="LGD Weighted" value={`${lgdW.toFixed(1)}%`} accent={T.high} sub="loss severity" sparkValues={lgdTrend} />
+        <Kpi label="Balance at Risk" value={formatCompactUsd(totalExposure)} accent={T.usd} sub={`${rows.length} reviews`} sparkValues={exposureTrend} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 2fr)', gap: 18, alignItems: 'start' }} className="aml-grid">

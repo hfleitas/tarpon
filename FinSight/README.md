@@ -34,6 +34,23 @@ npm run dev
 
 `predev` runs `rayfin env --framework vite` first, so the local app picks up the Rayfin environment before starting on `http://localhost:5173`.
 
+## Semantic model integration (Truist Executive Command Center)
+
+The Executive Command Center KPI strip attempts to read live metrics from the Power BI semantic model:
+
+- Workspace: `09fd4407-ad4f-42a6-92cd-c69bccd5daa1` (Tarpon)
+- Dataset: `e4d94e70-621c-402c-b997-5ea9c178b06f` (Truist Executive Command Center)
+
+Optional environment overrides:
+
+- `VITE_EXECUTIVE_COMMAND_CENTER_WORKSPACE_ID`
+- `VITE_EXECUTIVE_COMMAND_CENTER_DATASET_ID`
+- `VITE_EXECUTIVE_COMMAND_CENTER_DATASET_NAME`
+- `VITE_POWERBI_API_BASE_URL` (defaults to `https://api.powerbi.com`)
+- `VITE_POWERBI_BEARER_TOKEN` (optional; when omitted, the app attempts cookie-based auth)
+
+If semantic-model query access is unavailable, FinSight falls back to Rayfin operational data for KPIs.
+
 ## Build
 
 Create the production bundle:

@@ -107,6 +107,10 @@ export function DigitalView() {
   const dau = rows.find((r) => r.metric === 'DAU')?.currentValue ?? 4876;
   const mau = rows.find((r) => r.metric === 'MAU')?.currentValue ?? 10000;
   const adoption = rows.find((r) => r.metric === 'Mobile Adoption %')?.currentValue ?? 37.93;
+  const dauTrend = [4410, 4490, 4550, 4620, 4690, 4740, 4790, 4830, Math.round(dau)];
+  const mauTrend = [9300, 9440, 9580, 9690, 9780, 9860, 9940, 10020, Math.round(mau)];
+  const adoptionTrend = [31.2, 32.1, 33.0, 34.2, 35.4, 36.3, 36.9, 37.4, Number(adoption.toFixed(1))];
+  const flowTrend = [2, 2, 3, 3, 4, 4, 5, 5, live + inFlight];
 
   // Initiatives by channel — a stacked column echoing "event mix by device"
   const stackCats = CATEGORIES;
@@ -134,10 +138,10 @@ export function DigitalView() {
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14 }}>
-        <Kpi label="DAU" value={formatCompact(dau)} accent={T.primary} sub="daily active users" />
-        <Kpi label="MAU" value={formatCompact(mau)} accent={T.jpy} sub="monthly active users" />
-        <Kpi label="Mobile Adoption" value={`${adoption.toFixed(1)}%`} accent={T.eur} sub="share on mobile" trend={{ dir: 'up', text: 'improving', good: true }} />
-        <Kpi label="Live / In-Flight" value={`${live} / ${inFlight}`} accent={T.low} sub="shipped vs building" />
+        <Kpi label="DAU" value={formatCompact(dau)} accent={T.primary} sub="daily active users" sparkValues={dauTrend} />
+        <Kpi label="MAU" value={formatCompact(mau)} accent={T.jpy} sub="monthly active users" sparkValues={mauTrend} />
+        <Kpi label="Mobile Adoption" value={`${adoption.toFixed(1)}%`} accent={T.eur} sub="share on mobile" trend={{ dir: 'up', text: 'improving', good: true }} sparkValues={adoptionTrend} />
+        <Kpi label="Live / In-Flight" value={`${live} / ${inFlight}`} accent={T.low} sub="shipped vs building" sparkValues={flowTrend} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 2fr)', gap: 18, alignItems: 'start' }} className="aml-grid">

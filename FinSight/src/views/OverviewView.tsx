@@ -6,6 +6,11 @@ import {
 } from '../services/finsight';
 import { Loading } from './AmlView';
 import { T, formatCompactUsd, formatCompact, timeAgo, levelColors, CURRENCY_COLORS } from '../theme';
+import {
+  getExecutiveSemanticSnapshot,
+  semanticModelBinding,
+  type ExecutiveSemanticSnapshot,
+} from '../services/semanticModel';
 
 type Nav = 'aml' | 'credit' | 'treasury' | 'digital';
 
@@ -21,17 +26,20 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
   const [treasury, setTreasury] = useState<TreasuryAction[]>([]);
   const [digital, setDigital] = useState<DigitalInitiative[]>([]);
   const [loading, setLoading] = useState(true);
+  const [semanticSnapshot, setSemanticSnapshot] = useState<ExecutiveSemanticSnapshot | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     void (async () => {
       try {
-        const [a, c, t, d] = await Promise.all([
+        const [a, c, t, d, semantic] = await Promise.all([
           getAmlCases(), getCreditReviews(), getTreasuryActions(), getDigitalInitiatives(),
+          getExecutiveSemanticSnapshot(),
         ]);
         if (!cancelled) {
           setAml(a); setCredit(c); setTreasury(t); setDigital(d);
+          setSemanticSnapshot(semantic);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -51,13 +59,30 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
   const highSev = aml.filter((r) => r.riskScore >= 80).length;
   const dau = digital.find((r) => r.metric === 'DAU')?.currentValue ?? 4876;
   const fxExposure = treasury.filter((r) => r.currency !== 'USD').reduce((s, r) => s + Math.abs(r.amount), 0);
+  const metricScore = semanticSnapshot?.creditScoreAvg ?? avgScore;
+  const metricAml24 = semanticSnapshot?.amlAlertCount ?? aml24;
+  const metricHighSev = semanticSnapshot?.highSeverityAlerts ?? highSev;
+  const metricDau = semanticSnapshot?.dau ?? dau;
+  const metricFxExposure = semanticSnapshot?.fxExposure ?? fxExposure;
 
   const totalExp = credit.reduce((s, r) => s + r.exposure, 0);
   const pdW = totalExp ? credit.reduce((s, r) => s + r.pd * r.exposure, 0) / totalExp : 0;
 
   // Credit & AML 30-day-ish trend (synthetic smooth series for the exec sparkline)
-  const creditTrend = [572, 574, 573, 576, 575, 577, 574, 575, avgScore || 575];
-  const amlTrend = [12, 9, 14, 11, 16, 13, 18, 15, aml24];
+  const creditTrend = [572, 574, 573, 576, 575, 577, 574, 575, metricScore || 575];
+  const amlTrend = [12, 9, 14, 11, 16, 13, 18, 15, metricAml24];
+  const dauTrend = [4550, 4625, 4680, 4720, 4790, 4830, 4860, 4890, Math.round(metricDau)];
+  const fxTrend = [
+    metricFxExposure * 0.88,
+    metricFxExposure * 0.91,
+    metricFxExposure * 0.94,
+    metricFxExposure * 0.92,
+    metricFxExposure * 0.97,
+    metricFxExposure * 0.95,
+    metricFxExposure * 0.99,
+    metricFxExposure * 1.02,
+    metricFxExposure || 0,
+  ];
 
   // Liquidity by bucket + currency mix
   const BUCKETS = ['0-7D', '8-30D', '31-90D', '90D+'];
@@ -77,9 +102,9 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
   ].sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime()).slice(0, 7);
 
   const domainCards: { nav: Nav; label: string; color: string; primary: string; secondary: string }[] = [
-    { nav: 'aml', label: 'AML Automation', color: T.high, primary: `${aml.filter((r) => !['Cleared', 'SAR Filed'].includes(r.status)).length} open`, secondary: `${highSev} high severity` },
+    { nav: 'aml', label: 'AML Automation', color: T.high, primary: `${aml.filter((r) => !['Cleared', 'SAR Filed'].includes(r.status)).length} open`, secondary: `${metricHighSev} high severity` },
     { nav: 'credit', label: 'Risk Discipline', color: T.primary, primary: `${credit.filter((r) => r.status !== 'Closed').length} in review`, secondary: `PD ${pdW.toFixed(2)}%` },
-    { nav: 'treasury', label: 'Treasury Modernization', color: T.usd, primary: `${treasury.filter((r) => r.status === 'Pending').length} pending`, secondary: `${formatCompactUsd(fxExposure)} FX` },
+    { nav: 'treasury', label: 'Treasury Modernization', color: T.usd, primary: `${treasury.filter((r) => r.status === 'Pending').length} pending`, secondary: `${formatCompactUsd(metricFxExposure)} FX` },
     { nav: 'digital', label: 'Digital Efficiency', color: T.eur, primary: `${digital.filter((r) => r.status === 'In Progress').length} in flight`, secondary: `${digital.filter((r) => ['Live', 'Complete'].includes(r.status)).length} shipped` },
   ];
 
@@ -90,14 +115,19 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
         <p style={{ margin: '5px 0 0', fontSize: 13.5, color: T.muted, lineHeight: 1.5, maxWidth: 680 }}>
           The operational rollup across the four Fabric demo domains — where the bank <em>acts</em> on the signals its dashboards surface.
         </p>
+        <p style={{ margin: '6px 0 0', fontSize: 11.5, color: semanticSnapshot ? T.low : T.faint }}>
+          {semanticSnapshot
+            ? `Live semantic model source: ${semanticModelBinding.datasetName}`
+            : `Semantic model fallback: using Rayfin operational store (${semanticModelBinding.datasetName} unavailable)`}
+        </p>
       </div>
 
       {/* Executive KPI strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-        <Kpi label="Credit Score Avg" value={<span className="tnum">{avgScore.toFixed(0)}</span>} accent={T.primary} sub="portfolio mean" onClick={() => onNavigate('credit')} />
-        <Kpi label="AML Alerts · 24h" value={aml24} accent={T.high} sub={`${highSev} high severity`} onClick={() => onNavigate('aml')} />
-        <Kpi label="DAU" value={formatCompact(dau)} accent={T.eur} sub="daily active users" onClick={() => onNavigate('digital')} />
-        <Kpi label="FX Exposure" value={formatCompactUsd(fxExposure)} accent={T.usd} sub="non-USD absolute" onClick={() => onNavigate('treasury')} />
+        <Kpi label="Credit Score Avg" value={<span className="tnum">{metricScore.toFixed(0)}</span>} accent={T.primary} sub="portfolio mean" onClick={() => onNavigate('credit')} sparkValues={creditTrend} />
+        <Kpi label="AML Alerts · 24h" value={metricAml24} accent={T.high} sub={`${metricHighSev} high severity`} onClick={() => onNavigate('aml')} sparkValues={amlTrend} />
+        <Kpi label="DAU" value={formatCompact(metricDau)} accent={T.eur} sub="daily active users" onClick={() => onNavigate('digital')} sparkValues={dauTrend} />
+        <Kpi label="FX Exposure" value={formatCompactUsd(metricFxExposure)} accent={T.usd} sub="non-USD absolute" onClick={() => onNavigate('treasury')} sparkValues={fxTrend} />
       </div>
 
       {/* Domain shortcuts */}
@@ -126,12 +156,12 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="trend-grid">
               <div>
                 <div style={{ fontSize: 11.5, color: T.muted, marginBottom: 4 }}>Avg credit score</div>
-                <div className="tnum" style={{ fontSize: 24, fontWeight: 800, color: T.ink, marginBottom: 6 }}>{avgScore.toFixed(0)}</div>
+                <div className="tnum" style={{ fontSize: 24, fontWeight: 800, color: T.ink, marginBottom: 6 }}>{metricScore.toFixed(0)}</div>
                 <Sparkline values={creditTrend} width={280} height={54} color={T.primary} />
               </div>
               <div>
                 <div style={{ fontSize: 11.5, color: T.muted, marginBottom: 4 }}>AML alerts / day</div>
-                <div className="tnum" style={{ fontSize: 24, fontWeight: 800, color: T.high, marginBottom: 6 }}>{aml24}</div>
+                <div className="tnum" style={{ fontSize: 24, fontWeight: 800, color: T.high, marginBottom: 6 }}>{metricAml24}</div>
                 <Sparkline values={amlTrend} width={280} height={54} color={T.high} />
               </div>
             </div>
@@ -142,7 +172,7 @@ export function OverviewView({ onNavigate }: { onNavigate: (n: Nav) => void }) {
               <BarChart data={byBucket} valueFormat={(v) => formatCompactUsd(v)} />
             </Card>
             <Card title="Currency Mix" subtitle="FX exposure" accent={T.eur}>
-              <Donut data={currencyMix} centerValue={formatCompactUsd(fxExposure)} centerLabel="FX" size={148} thickness={26} />
+              <Donut data={currencyMix} centerValue={formatCompactUsd(metricFxExposure)} centerLabel="FX" size={148} thickness={26} />
             </Card>
           </div>
         </div>

@@ -75,6 +75,10 @@ export function AmlView() {
   const highSev = rows.filter((r) => r.riskScore >= 80);
   const openCases = rows.filter((r) => !['Cleared', 'SAR Filed'].includes(r.status));
   const sarFiled = rows.filter((r) => r.status === 'SAR Filed');
+  const alertsTrend = [7, 8, 10, 9, 11, 12, 10, 11, last24.length];
+  const highSeverityTrend = [3, 4, 4, 5, 5, 6, 5, 6, highSev.length];
+  const openTrend = [11, 13, 12, 14, 15, 14, 16, 15, openCases.length];
+  const sarTrend = [0, 1, 1, 2, 2, 2, 3, 3, sarFiled.length];
   const byReason = REASONS.map((reason) => ({ label: reason, value: rows.filter((r) => r.reason === reason).length })).sort((a, b) => b.value - a.value);
 
   const filtered = useMemo(() => {
@@ -113,10 +117,10 @@ export function AmlView() {
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14 }}>
-        <Kpi label="Alerts · Last 24h" value={last24.length} accent={T.primary} sub="anomaly cases opened" />
-        <Kpi label="High Severity" value={highSev.length} accent={T.high} sub="risk score ≥ 80" trend={{ dir: 'up', text: 'watch', good: false }} />
-        <Kpi label="Open Investigations" value={openCases.length} accent={T.med} sub="awaiting disposition" />
-        <Kpi label="SARs Filed" value={sarFiled.length} accent={T.usd} sub="reported this period" />
+        <Kpi label="Alerts · Last 24h" value={last24.length} accent={T.primary} sub="anomaly cases opened" sparkValues={alertsTrend} />
+        <Kpi label="High Severity" value={highSev.length} accent={T.high} sub="risk score ≥ 80" trend={{ dir: 'up', text: 'watch', good: false }} sparkValues={highSeverityTrend} />
+        <Kpi label="Open Investigations" value={openCases.length} accent={T.med} sub="awaiting disposition" sparkValues={openTrend} />
+        <Kpi label="SARs Filed" value={sarFiled.length} accent={T.usd} sub="reported this period" sparkValues={sarTrend} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 2fr)', gap: 18, alignItems: 'start' }} className="aml-grid">
