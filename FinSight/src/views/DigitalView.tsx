@@ -10,27 +10,48 @@ import {
   deleteDigitalInitiative,
   type DigitalInitiative,
 } from '../services/finsight';
-import { T, formatCompact, formatDate, statusColors } from '../theme';
+import { T, formatCompact, statusColors } from '../theme';
 
 const CHANNELS = ['Mobile', 'Web', 'Tablet'];
 const CATEGORIES = ['Adoption', 'Onboarding', 'BillPay', 'CardControls', 'Retention', 'Engagement'];
 const METRICS = ['DAU', 'MAU', 'Mobile Adoption %', 'Engagement Score'];
 const STATUSES = ['Planned', 'In Progress', 'Live', 'Complete'];
 const CHANNEL_COLORS: Record<string, string> = { Mobile: T.gbp, Tablet: T.jpy, Web: T.eur };
+const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+const dueDateFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
 
 type Draft = Omit<DigitalInitiative, 'id' | 'user_id'>;
 
 const pad2 = (value: number) => String(value).padStart(2, '0');
-const toLocalDate = (d: Date | string) => (d instanceof Date ? d : new Date(d));
-const toInput = (d: Date | string) => {
-  const date = toLocalDate(d);
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+const toDateOnlyUtc = (d: Date | string) => {
+  if (typeof d === 'string') {
+    const match = d.match(DATE_ONLY);
+    if (match) return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    const parsed = new Date(d);
+    return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
+  }
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 };
-const fromInput = (value: string) => new Date(`${value}T00:00:00`);
+const toInput = (d: Date | string) => {
+  const date = toDateOnlyUtc(d);
+  return `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+};
+const fromInput = (value: string) => toDateOnlyUtc(value);
+const formatDueDate = (d: Date | string) => dueDateFormatter.format(toDateOnlyUtc(d));
+const todayPlusDaysUtc = (days: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+};
 const emptyDraft = (): Draft => ({
   name: '', channel: 'Mobile', category: 'Adoption', metric: 'DAU',
   targetValue: 6000, currentValue: 4876, status: 'Planned', owner: '',
-  dueDate: new Date(Date.now() + 21 * 86400000), notes: '',
+  dueDate: todayPlusDaysUtc(21), notes: '',
 });
 
 function fmtMetric(metric: string, v: number): string {
@@ -86,6 +107,10 @@ export function DigitalView() {
   const dau = rows.find((r) => r.metric === 'DAU')?.currentValue ?? 4876;
   const mau = rows.find((r) => r.metric === 'MAU')?.currentValue ?? 10000;
   const adoption = rows.find((r) => r.metric === 'Mobile Adoption %')?.currentValue ?? 37.93;
+  const dauTrend = [4410, 4490, 4550, 4620, 4690, 4740, 4790, 4830, Math.round(dau)];
+  const mauTrend = [9300, 9440, 9580, 9690, 9780, 9860, 9940, 10020, Math.round(mau)];
+  const adoptionTrend = [31.2, 32.1, 33.0, 34.2, 35.4, 36.3, 36.9, 37.4, Number(adoption.toFixed(1))];
+  const flowTrend = [2, 2, 3, 3, 4, 4, 5, 5, live + inFlight];
 
   // Initiatives by channel — a stacked column echoing "event mix by device"
   const stackCats = CATEGORIES;
@@ -113,10 +138,10 @@ export function DigitalView() {
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14 }}>
-        <Kpi label="DAU" value={formatCompact(dau)} accent={T.primary} sub="daily active users" />
-        <Kpi label="MAU" value={formatCompact(mau)} accent={T.jpy} sub="monthly active users" />
-        <Kpi label="Mobile Adoption" value={`${adoption.toFixed(1)}%`} accent={T.eur} sub="share on mobile" trend={{ dir: 'up', text: 'improving', good: true }} />
-        <Kpi label="Live / In-Flight" value={`${live} / ${inFlight}`} accent={T.low} sub="shipped vs building" />
+        <Kpi label="DAU" value={formatCompact(dau)} accent={T.primary} sub="daily active users" sparkValues={dauTrend} />
+        <Kpi label="MAU" value={formatCompact(mau)} accent={T.jpy} sub="monthly active users" sparkValues={mauTrend} />
+        <Kpi label="Mobile Adoption" value={`${adoption.toFixed(1)}%`} accent={T.eur} sub="share on mobile" trend={{ dir: 'up', text: 'improving', good: true }} sparkValues={adoptionTrend} />
+        <Kpi label="Live / In-Flight" value={`${live} / ${inFlight}`} accent={T.low} sub="shipped vs building" sparkValues={flowTrend} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 2fr)', gap: 18, alignItems: 'start' }} className="aml-grid">
@@ -205,7 +230,7 @@ function InitiativeRow({ r, onClick }: { r: DigitalInitiative; onClick: () => vo
         <div className="tnum" style={{ fontSize: 11.5, color: T.inkSoft, whiteSpace: 'nowrap', fontWeight: 600 }}>
           {fmtMetric(r.metric, r.currentValue)} <span style={{ color: T.faint }}>/ {fmtMetric(r.metric, r.targetValue)}</span>
         </div>
-        <div style={{ fontSize: 11, color: T.faint, whiteSpace: 'nowrap', minWidth: 58, textAlign: 'right' }}>{formatDate(r.dueDate)}</div>
+        <div style={{ fontSize: 11, color: T.faint, whiteSpace: 'nowrap', minWidth: 58, textAlign: 'right' }}>{formatDueDate(r.dueDate)}</div>
       </div>
     </li>
   );

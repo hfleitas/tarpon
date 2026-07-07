@@ -7,7 +7,7 @@
     "predev": "rayfin env --framework vite",
     "prebuild": "rayfin env --framework vite",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b tsconfig.json rayfin/tsconfig.json && vite build",
     "preview": "vite preview",
     "deploy": "rayfin up"
   },

@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
+import { useId } from 'react';
 import { T } from '../theme';
 
 // ── Card ─────────────────────────────────────────────────────────────────────
@@ -6,6 +7,7 @@ export function Card({
   children,
   style,
   pad = 20,
+  headerPad,
   title,
   subtitle,
   right,
@@ -14,11 +16,14 @@ export function Card({
   children?: ReactNode;
   style?: CSSProperties;
   pad?: number;
+  headerPad?: number;
   title?: ReactNode;
   subtitle?: ReactNode;
   right?: ReactNode;
   accent?: string;
 }) {
+  const resolvedHeaderPad = headerPad ?? (pad === 0 ? 20 : pad);
+
   return (
     <section
       style={{
@@ -41,7 +46,7 @@ export function Card({
             alignItems: 'flex-start',
             justifyContent: 'space-between',
             gap: 12,
-            padding: `14px ${pad}px`,
+            padding: `14px ${resolvedHeaderPad}px`,
             borderBottom: `1px solid ${T.border}`,
           }}
         >
@@ -65,6 +70,8 @@ export function Kpi({
   accent = T.primary,
   trend,
   onClick,
+  sparkValues,
+  sparkColor,
 }: {
   label: string;
   value: ReactNode;
@@ -72,10 +79,21 @@ export function Kpi({
   accent?: string;
   trend?: { dir: 'up' | 'down' | 'flat'; text: string; good?: boolean };
   onClick?: () => void;
+  sparkValues?: number[];
+  sparkColor?: string;
 }) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    onClick();
+  };
+
   return (
     <div
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? 'button' : undefined}
       style={{
         position: 'relative',
         background: T.card,
@@ -95,6 +113,18 @@ export function Kpi({
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = T.shadow;
+      }}
+      onFocus={(e) => {
+        if (!onClick) return;
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = T.shadowLg;
+        e.currentTarget.style.outline = `2px solid ${T.primary}`;
+        e.currentTarget.style.outlineOffset = '2px';
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = T.shadow;
+        e.currentTarget.style.outline = 'none';
       }}
     >
       <div style={{ position: 'absolute', top: 0, insetInline: 0, height: 3, background: accent }} />
@@ -121,6 +151,16 @@ export function Kpi({
         )}
         {sub && <span style={{ fontSize: 11.5, color: T.muted }}>{sub}</span>}
       </div>
+      {sparkValues && sparkValues.length > 1 && (
+        <div style={{ marginTop: 8 }}>
+          <Sparkline
+            values={sparkValues}
+            width={180}
+            height={34}
+            color={sparkColor ?? accent}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -279,6 +319,7 @@ export function Sparkline({
   color?: string;
   fill?: boolean;
 }) {
+  const sparklineId = useId().replace(/:/g, '');
   if (values.length < 2) return <div style={{ height, width }} />;
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -291,7 +332,7 @@ export function Sparkline({
   });
   const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const area = `${line} L${pts[pts.length - 1][0].toFixed(1)},${height} L${pts[0][0].toFixed(1)},${height} Z`;
-  const gid = `sg-${color.replace('#', '')}`;
+  const gid = `sg-${color.replace('#', '')}-${sparklineId}`;
   return (
     <svg width={width} height={height} style={{ display: 'block' }}>
       <defs>

@@ -73,6 +73,10 @@ export function TreasuryView() {
   const fxExposure = rows.filter((r) => r.currency !== 'USD').reduce((s, r) => s + Math.abs(r.amount), 0);
   const pending = rows.filter((r) => r.status === 'Pending');
   const executed = rows.filter((r) => r.status === 'Executed');
+  const fxTrend = [0.82, 0.84, 0.86, 0.85, 0.88, 0.9, 0.92, 0.91, fxExposure / 1_000_000];
+  const pendingTrend = [6, 7, 6, 8, 9, 8, 7, 6, pending.length];
+  const executedTrend = [1, 1, 2, 2, 3, 3, 4, 4, executed.length];
+  const openTrend = [7, 8, 8, 9, 10, 10, 10, 9, rows.length - executed.length];
 
   // Currency mix (non-USD FX) for the donut
   const currencyMix = CURRENCIES.filter((c) => c !== 'USD').map((cur) => ({
@@ -134,10 +138,10 @@ export function TreasuryView() {
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14 }}>
-        <Kpi label="Total FX Exposure" value={formatCompactUsd(fxExposure)} accent={T.primary} sub="non-USD absolute" />
-        <Kpi label="Pending Approvals" value={pending.length} accent={T.med} sub="awaiting sign-off" trend={pending.length ? { dir: 'flat', text: 'action needed' } : undefined} />
-        <Kpi label="Executed" value={executed.length} accent={T.low} sub="settled this period" />
-        <Kpi label="Open Actions" value={rows.length - executed.length} accent={T.usd} sub="in the workflow" />
+        <Kpi label="Total FX Exposure" value={formatCompactUsd(fxExposure)} accent={T.primary} sub="non-USD absolute" sparkValues={fxTrend} />
+        <Kpi label="Pending Approvals" value={pending.length} accent={T.med} sub="awaiting sign-off" trend={pending.length ? { dir: 'flat', text: 'action needed' } : undefined} sparkValues={pendingTrend} />
+        <Kpi label="Executed" value={executed.length} accent={T.low} sub="settled this period" sparkValues={executedTrend} />
+        <Kpi label="Open Actions" value={rows.length - executed.length} accent={T.usd} sub="in the workflow" sparkValues={openTrend} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 18, alignItems: 'stretch' }} className="aml-grid">
