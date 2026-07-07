@@ -1,4 +1,4 @@
-// Demo seed data for the PREVIEW mock only.
+// Demo seed data for preview and first-run initialization.
 //
 // These rows mirror the real numbers in the Truist Fabric demo README so the
 // operational console feels connected to the analytical dashboards:
@@ -9,8 +9,8 @@
 //   • Treasury FX across GBP/JPY/EUR/USD/CAD and liquidity buckets 0-7D…90D+.
 //   • Digital initiatives targeting DAU/MAU/Mobile Adoption/Engagement Score.
 //
-// Against a real Fabric backend this file is never used — data comes from the
-// Lakehouse-derived tables and anything users create in the app.
+// In preview, rows are loaded into the in-memory mock. In real Fabric runtime,
+// we also use these rows for a one-time per-user bootstrap when tables are empty.
 
 import type { MockRayfinClient } from './mockClient';
 import type { FinSightAppSchema } from './schema';
@@ -20,6 +20,19 @@ const hoursAgo = (h: number) => new Date(now - h * 3_600_000);
 const daysAgo = (d: number) => new Date(now - d * 86_400_000);
 
 type Client = MockRayfinClient<FinSightAppSchema>;
+type SeedEntity<T extends { id: string }> = {
+  select(fields: (keyof T)[]): { execute(): Promise<T[]> };
+  create(data: Omit<T, 'id'> & { id?: string }): Promise<T>;
+};
+
+export interface SeedClient {
+  data: {
+    AmlCase: SeedEntity<FinSightAppSchema['AmlCase']>;
+    CreditReview: SeedEntity<FinSightAppSchema['CreditReview']>;
+    TreasuryAction: SeedEntity<FinSightAppSchema['TreasuryAction']>;
+    DigitalInitiative: SeedEntity<FinSightAppSchema['DigitalInitiative']>;
+  };
+}
 
 const amlCases: Array<Omit<FinSightAppSchema['AmlCase'], 'id'>> = [
   { caseNumber: 'AML-24118', subject: 'Rapid structuring across 6 accounts', reason: 'Structuring', riskScore: 92, amount: 486300, priority: 'High', status: 'Escalated', assignee: 'D. Okafor', openedAt: hoursAgo(3), notes: 'Sub-$10k deposits across linked accounts within 48h. Recommend SAR.', user_id: 'seed' },
@@ -72,6 +85,7 @@ const digitalInitiatives: Array<Omit<FinSightAppSchema['DigitalInitiative'], 'id
 ];
 
 let seeded = false;
+const seededUsers = new Set<string>();
 
 /** Idempotently load the demo dataset into the in-memory mock. */
 export function seedMock(client: Client): void {
@@ -81,4 +95,56 @@ export function seedMock(client: Client): void {
   for (const r of creditReviews) void client.data.CreditReview.create(r);
   for (const r of treasuryActions) void client.data.TreasuryAction.create(r);
   for (const r of digitalInitiatives) void client.data.DigitalInitiative.create(r);
+}
+
+function withUserId<T extends { user_id: string }>(
+  rows: readonly Omit<T, 'id'>[],
+  userId: string,
+): Array<Omit<T, 'id'>> {
+  return rows.map((row) => ({ ...row, user_id: userId }));
+}
+
+export async function seedIfEmptyForUser(
+  client: SeedClient,
+  userId: string,
+): Promise<boolean> {
+  if (seededUsers.has(userId)) {
+    return false;
+  }
+
+  const [existingAml, existingCredit, existingTreasury, existingDigital] =
+    await Promise.all([
+      client.data.AmlCase.select(['id']).execute(),
+      client.data.CreditReview.select(['id']).execute(),
+      client.data.TreasuryAction.select(['id']).execute(),
+      client.data.DigitalInitiative.select(['id']).execute(),
+    ]);
+
+  const hasExistingData =
+    existingAml.length > 0 ||
+    existingCredit.length > 0 ||
+    existingTreasury.length > 0 ||
+    existingDigital.length > 0;
+  if (hasExistingData) {
+    seededUsers.add(userId);
+    return false;
+  }
+
+  await Promise.all([
+    ...withUserId<FinSightAppSchema['AmlCase']>(amlCases, userId).map((row) =>
+      client.data.AmlCase.create(row),
+    ),
+    ...withUserId<FinSightAppSchema['CreditReview']>(creditReviews, userId).map((row) =>
+      client.data.CreditReview.create(row),
+    ),
+    ...withUserId<FinSightAppSchema['TreasuryAction']>(treasuryActions, userId).map((row) =>
+      client.data.TreasuryAction.create(row),
+    ),
+    ...withUserId<FinSightAppSchema['DigitalInitiative']>(digitalInitiatives, userId).map((row) =>
+      client.data.DigitalInitiative.create(row),
+    ),
+  ]);
+
+  seededUsers.add(userId);
+  return true;
 }

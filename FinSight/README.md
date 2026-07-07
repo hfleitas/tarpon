@@ -46,10 +46,12 @@ Optional environment overrides:
 - `VITE_EXECUTIVE_COMMAND_CENTER_WORKSPACE_ID`
 - `VITE_EXECUTIVE_COMMAND_CENTER_DATASET_ID`
 - `VITE_EXECUTIVE_COMMAND_CENTER_DATASET_NAME`
-- `VITE_POWERBI_API_BASE_URL` (defaults to `https://api.powerbi.com`)
-- `VITE_POWERBI_BEARER_TOKEN` (optional; when omitted, the app attempts cookie-based auth)
 
 If semantic-model query access is unavailable, FinSight falls back to Rayfin operational data for KPIs.
+
+## First-run data bootstrap
+
+In real Fabric runtime, FinSight now auto-seeds demo operational rows for the signed-in user when all four domain tables are empty. This prevents a blank or near-zero first experience when semantic-model metrics are unavailable.
 
 ## Build
 
