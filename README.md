@@ -1,6 +1,6 @@
 # Tarpon
 
-- See [README.md](/fabric/truist-demo/README.md) for banking scenario demo asset with Power BI, Agents and Microsoft IQ. 
+- See [README.md](./fabric/truist-demo/README.md) for banking scenario demo asset with Power BI, Agents and Microsoft IQ.
 - See [Project board automation](./boardautomation.md) for configuration and workflow details.
 
 ## Thank you
