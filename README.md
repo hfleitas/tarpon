@@ -1,5 +1,6 @@
 # Tarpon
 
+- See [Power BI & Fabric for Agentic AI](./fabric/truist-demo/Power%20BI%20%26%20Fabric%20for%20Agentic%20AI.pdf) for presenation on Power BI & Fabric for Agentic AI.
 - See [README.md](./fabric/truist-demo/README.md) for banking scenario demo asset with Power BI, Agents and Microsoft IQ.
 - See [Project board automation](./boardautomation.md) for configuration and workflow details.
 
