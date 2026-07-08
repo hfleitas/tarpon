@@ -1,4 +1,4 @@
-# tarpon
+# Tarpon
 
 ## Project board automation
 
