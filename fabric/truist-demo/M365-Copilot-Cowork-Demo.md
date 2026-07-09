@@ -84,7 +84,7 @@ that I can share with my team to build a series of communications based on findi
 ## Prompt 5 — Send via Teams and email
 
 ```
-Send it via Teams message and email to Amol Manocha, Rob Kerr, and Tim Arif.
+Send it via Teams message and email to <teammate A>, <teammate B>, and <teammate C>.
 Also CC their managers.
 ```
 
@@ -140,7 +140,7 @@ Yes.
 
 The agent will ask:
 
-> *"Want me to: Package these into a Word document for the team to circulate, send Comm 4 (the internal note) to your credit/risk contact now, or post the set into the Teams chat with Amol, Rob, and Tim?"*
+> *"Want me to: Package these into a Word document for the team to circulate, send Comm 4 (the internal note) to your credit/risk contact now, or post the set into the Teams chat with <teammate A>, <teammate B>, and <teammate C>?"*
 
 Respond (substituting real team names):
 
