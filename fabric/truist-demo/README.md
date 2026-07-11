@@ -130,7 +130,7 @@ For a presenter-friendly walkthrough of the executive summary, use:
 
 That package mirrors the deck slide-by-slide and includes the exported slide images under `presentations/executive-summary/slides/`.
 
-## Copilot Cowork Baseline Prompts 
+## Copilot Cowork Baseline Prompts
 
 Use the walkthrough [M365-Copilot-Cowork-Demo](M365-Copilot-Cowork-Demo.md) for an initial baseline via M365 Copilot Cowork w/Fabric-IQ enabled.
 
