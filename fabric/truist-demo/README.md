@@ -150,7 +150,7 @@ Run this after authenticating with `az login` to apply the KQL tables + ingestio
 ```powershell
 .\fabric\truist-demo\deployment\setup-workspace.ps1 `
   -WorkspaceId "<target_workspaceId>" `
-  -KqlDatabaseDisplayName "SignalsHost"
+  -KqlDatabaseDisplayName "TruistSignalsHost"
 ```
 
 Notes:
