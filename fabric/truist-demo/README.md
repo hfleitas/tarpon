@@ -130,6 +130,10 @@ For a presenter-friendly walkthrough of the executive summary, use:
 
 That package mirrors the deck slide-by-slide and includes the exported slide images under `presentations/executive-summary/slides/`.
 
+## Copilot Cowork Baseline Prompts 
+
+Use the walkthrough [M365-Copilot-Cowork-Demo](M365-Copilot-Cowork-Demo.md) for an initial baseline via M365 Copilot Cowork w/Fabric-IQ enabled.
+
 ## Copilot Semantic Model Prompt Examples
 
 Use these in Fabric Copilot / Power BI Copilot:
@@ -145,8 +149,8 @@ Run this after authenticating with `az login` to apply the KQL tables + ingestio
 
 ```powershell
 .\fabric\truist-demo\deployment\setup-workspace.ps1 `
-  -WorkspaceId "09fd4407-ad4f-42a6-92cd-c69bccd5daa1" `
-  -KqlDatabaseDisplayName "TruistSignalsHost"
+  -WorkspaceId "<target_workspaceId>" `
+  -KqlDatabaseDisplayName "SignalsHost"
 ```
 
 Notes:
